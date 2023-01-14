@@ -29,7 +29,7 @@ then
 
     # setup python3.10 and setup poetry
     sudo apt install -y python3.10 python3.10-dev python3.10-venv
-    python3.10 -m pip install --user -U pip setuptools poetry
+    python3.10 -m pip install --user -U pip setuptools poetry yt-dlp
     python3.10 -m poetry config virtualenvs.in-project true
 else
     echo $(python --version) is installed
