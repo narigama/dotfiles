@@ -1,4 +1,5 @@
 build-essential
+ffmpeg
 libssl-dev
 openssl
 software-properties-common

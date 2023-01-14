@@ -5,7 +5,7 @@ DEBIAN_FRONTEND=noninteractive
 # setup dirs
 mkdir -p $HOME/.local/bin
 
-# install base packages
+# install some packages
 echo setting up base packages
 sudo apt-get update -qq
 sudo apt-get install -yqq $(cat packages-debian)
@@ -35,6 +35,7 @@ else
     echo $(python --version) is installed
 fi
 
+# node
 if [[ -z $(which node) ]]
 then
     curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
