@@ -19,7 +19,7 @@ set -gx PATH $HOME/.local/bin:$PATH
 
 # aliases ----------------------------------------------------------------------
 alias l 'exa -lagh --git'
-alias :q quit
+alias :q exit
 alias :e code
 
 # prompt -----------------------------------------------------------------------

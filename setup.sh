@@ -8,7 +8,7 @@ mkdir -p $HOME/.local/bin
 # install some packages
 echo setting up base packages
 sudo apt-get update -qq
-sudo apt-get install -yqq $(cat packages-debian)
+sudo apt-get install -yqq $(cat packages-debian | grep -v "^#" | grep "\S")
 
 # neovim
 if [[ -z $(which nvim) ]]
@@ -25,7 +25,7 @@ if [[ -z $(which python3.10) ]]
 then
     # add deadsnakes to get all python versions
     sudo add-apt-repository -y ppa:deadsnakes/ppa
-    sudo apt update -qq
+    sudo apt-get update -qq
 
     # setup python3.10 and setup poetry
     sudo apt install -y python3.10 python3.10-dev python3.10-venv
@@ -39,7 +39,7 @@ fi
 if [[ -z $(which node) ]]
 then
     curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
-    sudo apt-get update -q
+    sudo apt-get update -qq
     sudo apt-get install nodejs
 else
     echo node $(node --version) is installed

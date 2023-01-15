@@ -1,5 +1,9 @@
+# dev stuff
 build-essential
-ffmpeg
+cmake
 libssl-dev
 openssl
 software-properties-common
+
+# media conversion
+ffmpeg
