@@ -20,6 +20,17 @@ else
     echo $(nvim --version | head -n1) is installed
 fi
 
+# fish
+if [[ -z $(which fish) ]]
+then
+    sudo apt-add-repository ppa:fish-shell/release-3
+    sudo apt-get update -qq
+    sudo apt-get install -y fish
+    sudo chsh -s $(which fish) $USER
+else
+    echo $(fish --version) is installed
+fi
+
 # python
 if [[ -z $(which python3.10) ]]
 then
@@ -28,7 +39,7 @@ then
     sudo apt-get update -qq
 
     # setup python3.10 and setup poetry
-    sudo apt install -y python3.10 python3.10-dev python3.10-venv
+    sudo apt-get install -y python3.10 python3.10-dev python3.10-venv
     python3.10 -m pip install --user -U pip setuptools poetry yt-dlp
     python3.10 -m poetry config virtualenvs.in-project true
 else
