@@ -22,6 +22,13 @@ alias l 'exa -lagh --git'
 alias :q exit
 alias :e code
 
+# rust ----------------------------------------------------------------------
+function add-mold
+    echo [target.x86_64-unknown-linux-gnu]
+    echo linker = "clang"
+    echo rustflags = ["-C", "link-arg=-fuse-ld=$(which mold)"]
+end
+
 # prompt -----------------------------------------------------------------------
 zoxide init fish | source
 starship init fish | source
