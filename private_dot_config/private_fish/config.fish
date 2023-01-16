@@ -21,6 +21,10 @@ set -gx PATH $HOME/.local/bin:$PATH
 alias l 'exa -lagh --git'
 alias :q exit
 alias :e code
+alias .. 'cd ..'
+alias ... 'cd ../..'
+alias .... 'cd ../../..'
+alias ..... 'cd ../../../..'
 
 # rust ----------------------------------------------------------------------
 function add-mold
