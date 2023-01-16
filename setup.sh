@@ -25,7 +25,7 @@ if [[ -z $(which fish) ]]
 then
     sudo apt-add-repository ppa:fish-shell/release-3
     sudo apt-get update -qq
-    sudo apt-get install -y fish
+    sudo apt-get install -yqq fish
     sudo chsh -s $(which fish) $USER
 else
     echo $(fish --version) is installed
@@ -39,7 +39,7 @@ then
     sudo apt-get update -qq
 
     # setup python3.10 and setup poetry
-    sudo apt-get install -y python3.10 python3.10-dev python3.10-venv
+    sudo apt-get install -yqq python3.10 python3.10-dev python3.10-venv
     python3.10 -m pip install --user -U pip setuptools poetry yt-dlp
     python3.10 -m poetry config virtualenvs.in-project true
 else
@@ -49,9 +49,9 @@ fi
 # node
 if [[ -z $(which node) ]]
 then
-    curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+    curl -sL https://deb.nodesource.com/setup_19.x | sudo bash -
     sudo apt-get update -qq
-    sudo apt-get install nodejs
+    sudo apt-get install -yqq nodejs
 else
     echo node $(node --version) is installed
 fi
