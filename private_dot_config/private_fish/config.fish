@@ -44,14 +44,16 @@ function pglist
     docker ps | grep -i postgres | cat
 end
 
-function pgstart -a name port -d "start a named postgres server"
+function pgstart -a pgname -d "start a named postgres server"
     set pgpass (openssl rand -hex 32)
-    docker run --rm -d -p $port:5432 --name postgres-$name \
+    docker run --rm -d -P --name postgres-$pgname \
         -e POSTGRES_USER=$USER \
         -e POSTGRES_PASSWORD=$pgpass \
-        -e POSTGRES_DB=$name \
+        -e POSTGRES_DB=$pgname \
         postgres:alpine
-    set -gx DATABASE_URL "postgres://$USER:$pgpass@localhost:$port/$name?sslmode=disable"
+
+    set pgport (docker port postgres-$pgname 5432 | cut -d: -f2)
+    set -gx DATABASE_URL "postgres://$USER:$pgpass@localhost:$pgport/$pgname?sslmode=disable"
     echo $DATABASE_URL
 end
 
@@ -68,9 +70,11 @@ function rdlist
     docker ps | grep -i redis | cat
 end
 
-function rdstart -a name port
-    docker run --rm -d -p $port:port --name redis-$name redis:alpine
-    echo "redis://localhost:$port"
+function rdstart -a rdname
+    docker run --rm -d -p $port:port --name redis-$rdname redis:alpine
+    set rdport (docker port postgres-$pgname 5432 | cut -d: -f2)
+    set -gx REDIS_URL "redis://localhost:$rdport"
+    echo $REDIS_URL
 end
 
 function rdstop -a name
