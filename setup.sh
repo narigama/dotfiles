@@ -4,6 +4,7 @@ DEBIAN_FRONTEND=noninteractive
 
 # setup dirs
 mkdir -p $HOME/.local/bin
+PATH=$HOME/.local/bin:$PATH
 
 # install some packages
 echo setting up base packages
@@ -16,9 +17,18 @@ then
     wget https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.deb
     sudo dpkg -i nvim-linux64.deb
     rm nvim-linux64.deb
-else
-    echo $(nvim --version | head -n1) is installed
 fi
+echo $(nvim --version | head -n1) is installed
+
+
+if [[ -z $(which age) ]]
+then
+    AGE_VERSION=1.1.1
+    curl -sL https://github.com/FiloSottile/age/releases/download/v$AGE_VERSION/age-v$AGE_VERSION-linux-amd64.tar.gz | tar -xvz
+    mv age/age* $HOME/.local/bin
+    rm -rf age
+fi
+echo age $(age --version) is installed
 
 # fish
 if [[ -z $(which fish) ]]
@@ -27,9 +37,8 @@ then
     sudo apt-get update -qq
     sudo apt-get install -yqq fish
     sudo chsh -s $(which fish) $USER
-else
-    echo $(fish --version) is installed
 fi
+echo $(fish --version) is installed
 
 # python
 if [[ -z $(which python3.10) ]]
@@ -42,9 +51,8 @@ then
     sudo apt-get install -yqq python3.10 python3.10-dev python3.10-venv
     python3.10 -m pip install --user -U pip setuptools poetry yt-dlp
     python3.10 -m poetry config virtualenvs.in-project true
-else
-    echo $(python --version) is installed
 fi
+echo $(python --version) is installed
 
 # node
 if [[ -z $(which node) ]]
@@ -52,9 +60,8 @@ then
     curl -sL https://deb.nodesource.com/setup_19.x | sudo bash -
     sudo apt-get update -qq
     sudo apt-get install -yqq nodejs
-else
-    echo node $(node --version) is installed
 fi
+echo node $(node --version) is installed
 
 # rust and binaries
 if [[ -z $(which cargo) ]]
@@ -63,9 +70,8 @@ then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     $HOME/.cargo/bin/cargo install binstall
     $HOME/.cargo/bin/cargo binstall -y bat exa ouch ripgrep starship tokei zoxide
-else
-    echo cargo $(cargo --version | awk '{print $2}') is installed
 fi
+echo cargo $(cargo --version | awk '{print $2}') is installed
 
 # grab chezmoi and apply dotfiles
 if [[ -z $(which chezmoi) ]]
@@ -73,6 +79,5 @@ then
     echo installing chezmoi
     sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
     chezmoi init --apply git@github.com:narigama/dotfiles.git
-else
-    echo $(chezmoi --version | cut -d, -f1) is installed
 fi
+echo $(chezmoi --version | cut -d, -f1) is installed
