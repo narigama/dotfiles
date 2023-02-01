@@ -38,6 +38,14 @@ return require("packer").startup(function(use)
         end
     }
 
+    -- easymotion
+    use {
+        "easymotion/vim-easymotion",
+        config = function()
+            vim.g.EasyMotion_smartcase = 1
+        end
+    }
+
     -- syntax highlighting
     use "nvim-treesitter/nvim-treesitter"
     use "sheerun/vim-polyglot"

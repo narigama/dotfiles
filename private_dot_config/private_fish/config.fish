@@ -26,9 +26,24 @@ alias ... 'cd ../..'
 alias .... 'cd ../../..'
 alias ..... 'cd ../../../..'
 
-# docker -----------------------------------------------------------------------
+# docker / helm ----------------------------------------------------------------
 function docker-vars -a name
     docker exec -t $name env | sort
+end
+
+alias ks 'kubectl run --rm -it --image alpine tmp-alpine'  # drop a shell on the cluster
+alias kd 'kubectl describe'
+
+function kc -a cluster
+    kubectl config use-context $cluster
+end
+
+function kn -a namespace
+    kubectl config set-context --current --namespace=$namespace
+end
+
+function kl
+    kubectl config get-contexts
 end
 
 # rust -------------------------------------------------------------------------

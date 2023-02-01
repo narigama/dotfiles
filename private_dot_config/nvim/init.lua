@@ -32,4 +32,7 @@ vim.opt.tabstop = 4
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.scrolloff = 999
+vim.opt.sidescrolloff = 999
 vim.opt.mouse = ""
+vim.opt.wrap = false
+
