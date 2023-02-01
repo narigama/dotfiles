@@ -20,7 +20,7 @@ then
 fi
 echo $(nvim --version | head -n1) is installed
 
-
+# age
 if [[ -z $(which age) ]]
 then
     AGE_VERSION=1.1.1
@@ -38,7 +38,21 @@ then
     sudo apt-get install -yqq fish
     sudo chsh -s $(which fish) $USER
 fi
-echo $(fish --version) is installed
+echo fish $(fish --version | awk '{print $3}') is installed
+
+# k9s
+if [[ -z $(which k9s) ]]
+then
+    mkdir k9s
+    cd k9s
+    wget https://github.com/derailed/k9s/releases/download/v0.27.2/k9s_Linux_amd64.tar.gz
+    tar -xvzf k9s_Linux_amd64.tar.gz
+    mv k9s $HOME/.local/bin
+    chmod +x $HOME/.local/bin/k9s
+    cd ..
+    rm -rf k9s
+fi
+echo k9s $(k9s version -s | head -n1 | awk '{print $2}') is installed
 
 # python
 if [[ -z $(which python3.10) ]]

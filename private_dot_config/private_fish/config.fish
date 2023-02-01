@@ -7,11 +7,11 @@ if not type -q fisher
 end
 
 # settings ---------------------------------------------------------------------
-set -U FZF_LEGACY_KEYBINDINGS 0
+set -gx FZF_LEGACY_KEYBINDINGS 0
 
 # editors ----------------------------------------------------------------------
-set -gx EDITOR 'code -w'
-set -gx VISUAL 'code -w'
+set -gx VISUAL nvim
+set -gx EDITOR nvim
 
 # paths ------------------------------------------------------------------------
 set -gx PATH $HOME/.cargo/bin:$PATH
