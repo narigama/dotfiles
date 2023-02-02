@@ -15,6 +15,10 @@ vim.g.mapleader = " "
 kmap("n", "j", "gj")
 kmap("n", "k", "gk")
 
+-- disable netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- setup options
 vim.opt.autoindent = true
 vim.opt.backup = false
