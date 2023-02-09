@@ -28,7 +28,7 @@ return require("packer").startup(function(use)
         "ojroques/nvim-hardline",
         config = function()
             require("hardline").setup {
-                theme = "nordic",
+                theme = "nordic"
             }
         end
     }
@@ -48,17 +48,15 @@ return require("packer").startup(function(use)
     -- file explorer
     use {
         "nvim-tree/nvim-tree.lua",
-        requires = {
-            "nvim-tree/nvim-web-devicons",
-        },
+        requires = {"nvim-tree/nvim-web-devicons"},
         config = function()
             require("nvim-tree").setup {
                 view = {
-                    width = 50,
-                },
+                    width = 50
+                }
             }
 
-            vim.api.nvim_set_keymap("n", "<Leader>t", ":NvimTreeToggle<CR>", { silent = true, noremap = true })
+            kmap("n", "<Leader>t", ":NvimTreeToggle<CR>")
         end
     }
 
@@ -68,7 +66,7 @@ return require("packer").startup(function(use)
         tag = "0.1.0",
         requires = {{"nvim-lua/plenary.nvim"}},
         config = function()
-            vim.api.nvim_set_keymap("n", "<C-p>", ":Telescope find_files<CR>", { silent = true, noremap = true })
+            kmap("n", "<C-p>", ":Telescope find_files<CR>")
         end
     }
 
@@ -83,6 +81,30 @@ return require("packer").startup(function(use)
     -- syntax highlighting
     use "nvim-treesitter/nvim-treesitter"
     use "sheerun/vim-polyglot"
+
+    -- LSP
+    use {
+        "williamboman/mason.nvim",
+        config = function()
+            require("mason").setup {}
+        end
+    }
+
+    use {
+        "williamboman/mason-lspconfig.nvim",
+        config = function()
+            require("mason-lspconfig").setup {
+                automatic_installation = true
+            }
+        end
+    }
+
+    use {
+        "neovim/nvim-lspconfig",
+        config = function()
+            -- todo: configure some sort of completion engine here
+        end
+    }
 
     if packer_bootstrap then
         require("packer").sync()

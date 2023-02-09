@@ -32,18 +32,12 @@ function docker-vars -a name
 end
 
 alias ks 'kubectl run --rm -it --image alpine tmp-alpine'  # drop a shell on the cluster
+alias kc 'kubectl config use-context'
 alias kd 'kubectl describe'
-
-function kc -a cluster
-    kubectl config use-context $cluster
-end
+alias kl 'kubectl config get-contexts'
 
 function kn -a namespace
     kubectl config set-context --current --namespace=$namespace
-end
-
-function kl
-    kubectl config get-contexts
 end
 
 # rust -------------------------------------------------------------------------
