@@ -57,3 +57,6 @@ vim.opt.tabstop = 4
 vim.opt.termguicolors = true
 vim.opt.wrap = false
 
+-- make sure we're running the latest configs
+vim.cmd [[ :PackerCompile ]]
+
