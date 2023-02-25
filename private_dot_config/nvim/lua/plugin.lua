@@ -1,6 +1,3 @@
-----------------------------------------------------------------------
--- WHENEVER YOU MODIFY THIS FILE, START NVIM AND RUN :PackerCompile --
-----------------------------------------------------------------------
 local ensure_packer = function()
     local fn = vim.fn
     local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
@@ -17,7 +14,7 @@ local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
 
-    -- look 'n' feel
+    -- theme
     use {
         'rebelot/kanagawa.nvim',
         config = function()
@@ -25,6 +22,7 @@ return require('packer').startup(function(use)
         end
     }
 
+    -- status line
     use {
         'ojroques/nvim-hardline',
         config = function()
@@ -34,17 +32,20 @@ return require('packer').startup(function(use)
         end
     }
 
+    -- commenting 
     use {
         'echasnovski/mini.nvim',
         config = function()
             require('mini.comment').setup()
-            require('mini.completion').setup {
-                delay = {
-                    completion = 0,
-                    info = 0,
-                    signature = 0,
-                },
-            }
+        end
+    }
+
+    -- notifications
+    use {
+        'rcarriga/nvim-notify',
+        config = function()
+            vim.notify = require('notify')
+            vim.notify.setup()
         end
     }
 
@@ -71,7 +72,7 @@ return require('packer').startup(function(use)
                 }
             }
 
-            vim.keymap.set('n', '<Leader>t', ':NvimTreeToggle<CR>', {
+            vim.keymap.set('n', '<Leader>e', ':NvimTreeToggle<CR>', {
                 silent = true
             })
         end
@@ -111,14 +112,51 @@ return require('packer').startup(function(use)
         end
     }
 
+    -- TODO: Autocompletion
+    use {
+        'hrsh7th/nvim-cmp',
+        requires = {'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path', 'hrsh7th/cmp-cmdline', 'hrsh7th/cmp-vsnip', 'hrsh7th/vim-vsnip'},
+        config = function()
+            local cmp = require("cmp")
+
+            cmp.setup({
+                snippet = {
+                    expand = function()
+                        vim.fn["vsnip#anonymous"](args.body)
+                    end
+                },
+                mapping = cmp.mapping.preset.insert {
+                    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+                    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+                    ['<C-Space>'] = cmp.mapping.complete(),
+                    ['<C-e>'] = cmp.mapping.abort(),
+                    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+                },
+                sources = cmp.config.sources({
+                    { name = 'nvim_lsp' },
+                    { name = 'vsnip' },
+                }, {
+                    { name = 'buffer' },
+                }),
+            })
+        end
+    }
+
     -- LSP
     use {
         'neovim/nvim-lspconfig',
-        requires = {'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim', 'j-hui/fidget.nvim',
-                    'folke/neodev.nvim'}
-    }
+        requires = {'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim', 'j-hui/fidget.nvim', 'folke/neodev.nvim'},
+        config = function()
+            require("mason").setup()
+            local lsp = require('lspconfig')
+            local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-    -- TODO: Autocompletion
+            local servers = {"pyright", "ruff_lsp", "rust_analyzer"}
+            for _, server in pairs(servers) do
+                lsp[server].setup { capabilities = capabilities }
+            end
+        end
+    }
 
     if packer_bootstrap then
         require('packer').sync()
