@@ -12,7 +12,7 @@ end
 local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim'
+    use 'wbthomason/packer.nvim'  -- keep packer up to date
 
     -- theme
     use {
@@ -66,15 +66,14 @@ return require('packer').startup(function(use)
         'nvim-tree/nvim-tree.lua',
         requires = {'nvim-tree/nvim-web-devicons'},
         config = function()
+            vim.g.nvim_tree_show_icons = false
             require('nvim-tree').setup {
                 view = {
                     width = 50
                 }
             }
 
-            vim.keymap.set('n', '<Leader>e', ':NvimTreeToggle<CR>', {
-                silent = true
-            })
+            vim.keymap.set('n', '<Leader>e', ':NvimTreeToggle<CR>', { silent = true })
         end
     }
 
@@ -112,35 +111,10 @@ return require('packer').startup(function(use)
         end
     }
 
-    -- TODO: Autocompletion
-    use {
-        'hrsh7th/nvim-cmp',
-        requires = {'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path', 'hrsh7th/cmp-cmdline', 'hrsh7th/cmp-vsnip', 'hrsh7th/vim-vsnip'},
-        config = function()
-            local cmp = require("cmp")
-
-            cmp.setup({
-                snippet = {
-                    expand = function()
-                        vim.fn["vsnip#anonymous"](args.body)
-                    end
-                },
-                mapping = cmp.mapping.preset.insert {
-                    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-                    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                    ['<C-Space>'] = cmp.mapping.complete(),
-                    ['<C-e>'] = cmp.mapping.abort(),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-                },
-                sources = cmp.config.sources({
-                    { name = 'nvim_lsp' },
-                    { name = 'vsnip' },
-                }, {
-                    { name = 'buffer' },
-                }),
-            })
-        end
-    }
+    -- autocomplete
+    use { 'ms-jpq/coq.artifacts', branch = 'artifacts' }
+    use { 'ms-jpq/coq.thirdparty', branch = '3p' }
+    use { 'ms-jpq/coq_nvim', branch = 'coq' }
 
     -- LSP
     use {
@@ -148,13 +122,20 @@ return require('packer').startup(function(use)
         requires = {'williamboman/mason.nvim', 'williamboman/mason-lspconfig.nvim', 'j-hui/fidget.nvim', 'folke/neodev.nvim'},
         config = function()
             require("mason").setup()
+            local coq = require('coq')
             local lsp = require('lspconfig')
-            local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-            local servers = {"pyright", "ruff_lsp", "rust_analyzer"}
-            for _, server in pairs(servers) do
-                lsp[server].setup { capabilities = capabilities }
+            local servers = {
+                pyright = {},
+                ruff_lsp = {},
+                rust_analyzer = {},
+            }
+
+            for server, config in pairs(servers) do
+                lsp[server].setup(coq.lsp_ensure_capabilities(config))
             end
+
+            vim.cmd([[COQnow -s]])
         end
     }
 
