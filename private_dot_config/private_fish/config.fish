@@ -49,6 +49,8 @@ end
 
 # prompt -----------------------------------------------------------------------
 zoxide init fish | source
+atuin gen-completions --shell fish | source
+atuin init fish --disable-up-arrow | source
 starship init fish | source
 starship config git_metrics.disabled false
 starship config kubernetes.disabled false
@@ -124,7 +126,6 @@ end
 function mnstop -a name
     docker stop minio-$name
 end
-
 
 # machine specific config ------------------------------------------------------
 touch $HOME/.secret_stuff
