@@ -26,6 +26,12 @@ alias ... 'cd ../..'
 alias .... 'cd ../../..'
 alias ..... 'cd ../../../..'
 
+# schemaspy --------------------------------------------------------------------
+function schemaspy -a host port username password db
+    mkdir -p schemaspy/tables
+    docker run --rm -it -v $(pwd)/schemaspy:/output schemaspy/schemaspy -t pgsql11 -host $host -port $port -u $username -p $password -db $db 
+end
+
 # docker / helm ----------------------------------------------------------------
 function docker-vars -a name
     docker exec -t $name env | sort
