@@ -61,6 +61,10 @@ starship init fish | source
 starship config git_metrics.disabled false
 starship config kubernetes.disabled false
 
+# tooling management -----------------------------------------------------------
+rtx activate | source
+rtx completions fish | source
+
 # postgres ---------------------------------------------------------------------
 function pglist
     docker ps | grep -i postgres | cat
