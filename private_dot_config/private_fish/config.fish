@@ -18,6 +18,7 @@ set -gx PATH $HOME/.cargo/bin:$PATH
 set -gx PATH $HOME/.local/bin:$PATH
 
 # aliases ----------------------------------------------------------------------
+alias lg lazygit
 alias l 'exa -lagh --git'
 alias :q exit
 alias :e code
@@ -64,6 +65,9 @@ starship config kubernetes.disabled false
 # tooling management -----------------------------------------------------------
 rtx activate | source
 rtx completions fish | source
+
+# jupyter ----------------------------------------------------------------------
+alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -v $(pwd):/home/jovyan jupyter/tensorflow-notebook"
 
 # postgres ---------------------------------------------------------------------
 function pglist
@@ -119,8 +123,7 @@ end
 function mnstart -a name
     set mnpass (openssl rand -hex 4)
     docker run --rm -d --name minio-$name \
-        -p 0:9000 \
-        -p 0:9001 \
+        -P \
         -e MINIO_ROOT_USER=$name \
         -e MINIO_ROOT_PASSWORD=$mnpass \
         bitnami/minio:latest
