@@ -22,6 +22,7 @@ alias lg lazygit
 alias l 'exa -lagh --git'
 alias :q exit
 alias :e code
+alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
 alias .. 'cd ..'
 alias ... 'cd ../..'
 alias .... 'cd ../../..'
