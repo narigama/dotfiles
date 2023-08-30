@@ -31,7 +31,7 @@ alias ..... 'cd ../../../..'
 # schemaspy --------------------------------------------------------------------
 function schemaspy -a host port username password db
     mkdir -p schemaspy/tables
-    docker run --rm -it -v $(pwd)/schemaspy:/output schemaspy/schemaspy -t pgsql11 -host $host -port $port -u $username -p $password -db $db 
+    docker run --rm -it -v (pwd)/schemaspy:/output schemaspy/schemaspy -t pgsql11 -host $host -port $port -u $username -p $password -db $db 
 end
 
 # docker / helm ----------------------------------------------------------------
@@ -67,8 +67,9 @@ starship config kubernetes.disabled false
 rtx activate | source
 rtx completions fish | source
 
-# jupyter ----------------------------------------------------------------------
-alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -v $(pwd):/home/jovyan jupyter/tensorflow-notebook"
+# jupyter / livebook -----------------------------------------------------------
+alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -u (id -u):(id -g) -v (pwd):/home/jovyan jupyter/tensorflow-notebook"
+alias livebook "docker run --name livebook --rm -it -p 8080:8080 -p 8081:8081 --pull always -u (id -u):(id -g) -v (pwd):/data ghcr.io/livebook-dev/livebook"
 
 # postgres ---------------------------------------------------------------------
 function pglist
