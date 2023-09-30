@@ -41,8 +41,8 @@ end
 
 alias ks 'kubectl run --rm -it --image alpine tmp-alpine'  # drop a shell on the cluster
 alias kc 'kubectl config use-context'
-alias kd 'kubectl describe'
 alias kl 'kubectl config get-contexts'
+alias kd 'kubectl describe'
 
 function kn -a namespace
     kubectl config set-context --current --namespace=$namespace
@@ -55,6 +55,9 @@ function add-mold
     echo rustflags = ["-C", "link-arg=-fuse-ld=$(which mold)"]
 end
 
+# tooling management -----------------------------------------------------------
+source $HOME/.asdf/asdf.fish
+
 # prompt -----------------------------------------------------------------------
 zoxide init fish | source
 atuin gen-completions --shell fish | source
@@ -62,10 +65,6 @@ atuin init fish --disable-up-arrow | source
 starship init fish | source
 starship config git_metrics.disabled false
 starship config kubernetes.disabled false
-
-# tooling management -----------------------------------------------------------
-rtx activate | source
-rtx completions fish | source
 
 # jupyter / livebook -----------------------------------------------------------
 alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -u (id -u):(id -g) -v (pwd):/home/jovyan jupyter/tensorflow-notebook"
@@ -77,15 +76,12 @@ function pglist
 end
 
 function pgstart -a name
-    set pgpass (openssl rand -hex 8)
     docker run --rm -d -P --name postgres-$name \
-        -e POSTGRES_USER=$name \
-        -e POSTGRES_PASSWORD=$pgpass \
-        -e POSTGRES_DB=$name \
-        postgres:alpine
+        -e POSTGRES_PASSWORD=postgres \
+        supabase/postgres
 
     set pgport (docker port postgres-$name 5432 | cut -d: -f2)
-    set -gx DATABASE_URL "postgres://$name:$pgpass@localhost:$pgport/$name?sslmode=disable"
+    set -gx DATABASE_URL "postgres://postgres:postgres@localhost:$pgport/postgres?sslmode=disable"
     echo $DATABASE_URL
 end
 
@@ -94,7 +90,7 @@ function pgstop -a name
 end
 
 function pgshell -a name
-    docker exec -it postgres-$name psql -U$name $name
+    docker exec -it postgres-$name psql -Upostgres -h127.0.0.1
 end
 
 # redis ------------------------------------------------------------------------
@@ -145,3 +141,4 @@ end
 # machine specific config ------------------------------------------------------
 touch $HOME/.secret_stuff
 source $HOME/.secret_stuff
+
