@@ -75,14 +75,18 @@ function pglist
     docker ps | grep -i postgres | cat
 end
 
+function pgenv -a name
+    set pgport (docker port postgres-$name 5432 | cut -d: -f2)
+    set -gx DATABASE_URL "postgres://postgres:postgres@localhost:$pgport/postgres?sslmode=disable"
+    echo $DATABASE_URL
+end
+
 function pgstart -a name
     docker run --rm -d -P --name postgres-$name \
         -e POSTGRES_PASSWORD=postgres \
         supabase/postgres
 
-    set pgport (docker port postgres-$name 5432 | cut -d: -f2)
-    set -gx DATABASE_URL "postgres://postgres:postgres@localhost:$pgport/postgres?sslmode=disable"
-    echo $DATABASE_URL
+    pgenv $name
 end
 
 function pgstop -a name
