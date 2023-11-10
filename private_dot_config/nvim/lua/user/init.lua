@@ -12,8 +12,8 @@ return {
       end,
     },
     {
-      "phaazon/hop.nvim",
-      branch = "v2",
+      "smoka7/hop.nvim",
+      -- branch = "master",
       lazy = false,
       config = function()
         -- setup and config colours
