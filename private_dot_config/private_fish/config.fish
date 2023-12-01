@@ -70,6 +70,23 @@ starship config kubernetes.disabled false
 alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -u (id -u):(id -g) -v (pwd):/home/jovyan jupyter/tensorflow-notebook"
 alias livebook "docker run --name livebook --rm -it -p 8080:8080 -p 8081:8081 --pull always -u (id -u):(id -g) -v (pwd):/data ghcr.io/livebook-dev/livebook"
 
+# poetry -----------------------------------------------------------------------
+function po-a -a name
+    poetry add $name@\* $argv[2..-1]
+end
+
+function po-ad -a name
+    poetry add --group dev $name@\* $argv[2..-1]
+end
+
+function po-r -a name
+    poetry add $name@\* $argv[2..-1]
+end
+
+function po-rd -a name
+    poetry add --group dev $name@\* $argv[2..-1]
+end
+
 # postgres ---------------------------------------------------------------------
 function pglist
     docker ps | grep -i postgres | cat
@@ -102,11 +119,15 @@ function rdlist
     docker ps | grep -i redis | cat
 end
 
-function rdstart -a name
-    docker run --rm -d -P --name redis-$name redis:alpine
+function rdenv -a name
     set rdport (docker port redis-$name 6379 | cut -d: -f2)
     set -gx REDIS_URL "redis://localhost:$rdport"
     echo $REDIS_URL
+end
+
+function rdstart -a name
+    docker run --rm -d -P --name redis-$name redis:alpine
+    rdenv $name
 end
 
 function rdstop -a name

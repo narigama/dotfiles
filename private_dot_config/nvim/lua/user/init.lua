@@ -6,9 +6,7 @@ return {
       "rebelot/kanagawa.nvim",
       name = "kanagawa",
       config = function()
-        require("kanagawa").setup {
-          theme = "wave",
-        }
+        require("kanagawa").setup {}
       end,
     },
     {
@@ -47,6 +45,7 @@ return {
   },
 
   polish = function()
+    vim.cmd("set mouse=")
     vim.opt.rnu = false
     vim.opt.scrolloff = 999
     vim.opt.sidescrolloff = 999
