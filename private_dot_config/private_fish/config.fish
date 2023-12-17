@@ -39,6 +39,10 @@ function docker-vars -a name
     docker exec -t $name env | sort
 end
 
+function docker-port -a name -a port
+  echo $name".docker.localhost:"$(docker port $name $port | cut -d: -f2)
+end
+
 alias ks 'kubectl run --rm -it --image alpine tmp-alpine'  # drop a shell on the cluster
 alias kc 'kubectl config use-context'
 alias kl 'kubectl config get-contexts'
