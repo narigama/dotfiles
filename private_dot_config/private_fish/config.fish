@@ -62,6 +62,11 @@ end
 # tooling management -----------------------------------------------------------
 source $HOME/.asdf/asdf.fish
 
+# zola -------------------------------------------------------------------------
+function zola
+    docker run --rm -it -u $(id -u):$(id -g) -v $PWD:/app --workdir /app --name zola -p :1111 ghcr.io/getzola/zola:v0.17.1 $argv
+end
+
 # prompt -----------------------------------------------------------------------
 zoxide init fish | source
 atuin gen-completions --shell fish | source
@@ -112,6 +117,7 @@ end
 
 function pgstop -a name
     docker stop postgres-$name
+    set -u DATABASE_URL
 end
 
 function pgshell -a name
@@ -136,10 +142,49 @@ end
 
 function rdstop -a name
     docker stop redis-$name
+    set -u REDIS_URL
 end
 
 function rdshell -a name
     docker exec -it redis-$name redis-cli
+end
+
+# rmq --------------------------------------------------------------------------
+function rmqlist
+    docker ps | grep -i rmq | cat
+end
+
+function rmqenv -a name
+    # display the http port
+    set rmqport (docker port rmq-$name 15672 | cut -d: -f2)
+    echo "http://localhost:$rmqport/"
+
+    # and the amqp port, whilst also setting it as AMQP_URL
+    set rmqport (docker port rmq-$name 15675 | cut -d: -f2)
+    set -gx MQTT_URL "ws://guest:guest@localhost:$rmqport/ws"
+    echo $MQTT_URL
+
+    # and the amqp port, whilst also setting it as AMQP_URL
+    set rmqport (docker port rmq-$name 5672 | cut -d: -f2)
+    set -gx AMQP_URL "amqp://guest:guest@localhost:$rmqport"
+    echo $AMQP_URL
+
+end
+
+function rmqstart -a name
+    docker run --rm -d -P -p :15675 --name rmq-$name rabbitmq:3-management-alpine
+    sleep 3  # wait otherwise the next command running too early shuts rmq down
+    docker exec rmq-$name ash -c 'rabbitmq-plugins enable rabbitmq_web_mqtt'
+    rmqenv $name
+end
+
+function rmqstop -a name
+    docker stop rmq-$name
+    set -u AMQP_URL
+end
+
+function rmqshell -a name
+    docker exec -it rmq-$name ash
 end
 
 # minio ------------------------------------------------------------------------

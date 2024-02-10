@@ -17,8 +17,8 @@ return {
         -- setup and config colours
         require("hop").setup {
           case_insensitive = true,
-
         }
+
         vim.cmd("hi HopNextKey guifg=#00ff00")
         vim.cmd("hi HopNextKey1 guifg=#00ff00")
         vim.cmd("hi HopNextKey2 guifg=#00a300")
