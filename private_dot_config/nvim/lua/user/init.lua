@@ -3,11 +3,10 @@ return {
 
   plugins = {
     {
-      "rebelot/kanagawa.nvim",
-      name = "kanagawa",
-      config = function()
-        require("kanagawa").setup {}
-      end,
+      "AstroNvim/astrocommunity",
+      { import = "astrocommunity.pack.rust" },
+      { import = "astrocommunity.pack.python-ruff" },
+      { import = "astrocommunity.colorscheme.kanagawa-nvim", enabled = true },
     },
     {
       "smoka7/hop.nvim",
@@ -42,7 +41,22 @@ return {
         enabled = false,
       },
     },
+    config = {
+      rust_analyzer = {
+        settings = {
+          -- Add clippy lints for Rust.
+          ["rust-analyzer"] = {
+            checkOnSave = {
+              allFeatures = true,
+              command = "clippy",
+              extraArgs = { "--no-deps" },
+            },
+          },
+        },
+      },
+    },
   },
+
 
   polish = function()
     vim.cmd("set mouse=")
