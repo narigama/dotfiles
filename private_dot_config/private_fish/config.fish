@@ -115,6 +115,16 @@ function pgstart -a name
     pgenv $name
 end
 
+function pgstart-inmemory -a name
+    docker run --rm -d -P --name postgres-$name \
+        --tmpfs /var/lib/postgresql/data \
+        -e PGDATA=/var/lib/postgresql/data \
+        -e POSTGRES_PASSWORD=postgres \
+        supabase/postgres
+
+    pgenv $name
+end
+
 function pgstop -a name
     docker stop postgres-$name
     set -u DATABASE_URL

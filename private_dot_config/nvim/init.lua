@@ -35,11 +35,20 @@ require("lazy").setup({
     },
   },
   {
+    "AstroNvim/astrocommunity",
+    { import = "astrocommunity.pack.lua" },
+    { import = "astrocommunity.pack.rust" },
+    { import = "astrocommunity.pack.toml" },
+    { import = "astrocommunity.pack.python-ruff" },
+    { import = "astrocommunity.colorscheme.kanagawa-nvim" },
+  },
+  {
     "AstroNvim/astrolsp",
     opts = {
-      features = {
-        autoformat = false,
-        inlay_hints = true,
+      formatting = {
+        format_on_save = {
+          enabled = false,
+        },
       },
       config = {
         rust_analyzer = {
@@ -51,19 +60,16 @@ require("lazy").setup({
                 command = "clippy",
                 extraArgs = { "--no-deps" },
               },
+              completion = {
+                postfix = {
+                  enable = true,
+                },
+              },
             },
           },
         },
       },
     },
-  },
-  {
-    "AstroNvim/astrocommunity",
-    { import = "astrocommunity.pack.lua" },
-    { import = "astrocommunity.pack.rust" },
-    { import = "astrocommunity.pack.toml" },
-    { import = "astrocommunity.pack.python-ruff" },
-    { import = "astrocommunity.colorscheme.kanagawa-nvim", enabled = true },
   },
   {
     "smoka7/hop.nvim",
