@@ -1,25 +1,26 @@
-# plugin management ------------------------------------------------------------
+# plugins ----------------------------------------------------------------------
 if not type -q fisher
-    echo "fisher is not installed, fetching..."
-    curl -sL https://git.io/fisher | source
+    echo "Installing Fisher and Friends"
+    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
     fisher install jorgebucaran/fisher
     fisher install jethrokuan/fzf
 end
 
 # settings ---------------------------------------------------------------------
-set -gx FZF_LEGACY_KEYBINDINGS 0
+set fish_greeting
 
 # editors ----------------------------------------------------------------------
 set -gx VISUAL nvim
 set -gx EDITOR nvim
 
 # paths ------------------------------------------------------------------------
-set -gx PATH $HOME/.cargo/bin:$PATH
-set -gx PATH $HOME/.local/bin:$PATH
+fish_add_path $HOME/.cargo/bin
+fish_add_path $HOME/.local/bin
 
 # aliases ----------------------------------------------------------------------
 alias lg lazygit
 alias l 'exa -lagh --git'
+alias ll 'exa -lgh --git'
 alias :q exit
 alias :e code
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
@@ -40,7 +41,7 @@ function docker-vars -a name
 end
 
 function docker-port -a name -a port
-  echo $name".docker.localhost:"$(docker port $name $port | cut -d: -f2)
+  echo $name".docker.localhost:"$(docker port $name $port | head -n1 | cut -d: -f2)
 end
 
 alias ks 'kubectl run --rm -it --image alpine tmp-alpine'  # drop a shell on the cluster
@@ -102,7 +103,7 @@ function pglist
 end
 
 function pgenv -a name
-    set pgport (docker port postgres-$name 5432 | cut -d: -f2)
+    set pgport (docker port postgres-$name 5432 | head -n1 | cut -d: -f2)
     set -gx DATABASE_URL "postgres://postgres:postgres@localhost:$pgport/postgres?sslmode=disable"
     echo $DATABASE_URL
 end
@@ -140,7 +141,7 @@ function rdlist
 end
 
 function rdenv -a name
-    set rdport (docker port redis-$name 6379 | cut -d: -f2)
+    set rdport (docker port redis-$name 6379 | head -n1 | cut -d: -f2)
     set -gx REDIS_URL "redis://localhost:$rdport"
     echo $REDIS_URL
 end
@@ -166,16 +167,16 @@ end
 
 function rmqenv -a name
     # display the http port
-    set rmqport (docker port rmq-$name 15672 | cut -d: -f2)
+    set rmqport (docker port rmq-$name 15672 | head -n1 | cut -d: -f2)
     echo "http://localhost:$rmqport/"
 
     # and the amqp port, whilst also setting it as AMQP_URL
-    set rmqport (docker port rmq-$name 15675 | cut -d: -f2)
+    set rmqport (docker port rmq-$name 15675 | head -n1 | cut -d: -f2)
     set -gx MQTT_URL "ws://guest:guest@localhost:$rmqport/ws"
     echo $MQTT_URL
 
     # and the amqp port, whilst also setting it as AMQP_URL
-    set rmqport (docker port rmq-$name 5672 | cut -d: -f2)
+    set rmqport (docker port rmq-$name 5672 | head -n1 | cut -d: -f2)
     set -gx AMQP_URL "amqp://guest:guest@localhost:$rmqport"
     echo $AMQP_URL
 
@@ -210,10 +211,10 @@ function mnstart -a name
         -e MINIO_ROOT_PASSWORD=$mnpass \
         bitnami/minio:latest
 
-    set mnport (docker port minio-$name 9001 | cut -d: -f2)
+    set mnport (docker port minio-$name 9001 | head -n1 | cut -d: -f2)
     echo "Admin Dashboard:  http://localhost:$mnport ($name:$mnpass)"
 
-    set mnport (docker port minio-$name 9000 | cut -d: -f2)
+    set mnport (docker port minio-$name 9000 | head -n1 | cut -d: -f2)
     set -gx BUCKET_URL "http://localhost:$mnport"
     echo "Bucket URL:       $BUCKET_URL"
 end
