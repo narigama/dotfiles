@@ -1,15 +1,30 @@
 [user]
 	name = David Smith
 	email = david@narigama.dev
+	signingkey = 1C0F32B6F5397E05D03A118C2A8B0DE5CCE3732C
 
 [alias]
 	co = checkout
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 	ls = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
 	ignore = "!gi() { curl -L -s https://www.gitignore.io/api/$@ ;}; gi"
+	dif = difftool
 
 [init]
 	defaultBranch = master
 
 [core]
 	excludesfile = ~/.gitignore
+
+[diff]
+  tool = difftastic
+
+[difftool]
+  prompt = false
+
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
+
+[pager]
+  difftool = true
+

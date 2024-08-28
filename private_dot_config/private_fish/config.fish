@@ -19,8 +19,8 @@ fish_add_path $HOME/.local/bin
 
 # aliases ----------------------------------------------------------------------
 alias lg lazygit
-alias l 'exa -lagh --git'
-alias ll 'exa -lgh --git'
+alias l 'eza -lagh --git'
+alias ll 'eza -lgh --git'
 alias :q exit
 alias :e code
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
@@ -28,6 +28,12 @@ alias .. 'cd ..'
 alias ... 'cd ../..'
 alias .... 'cd ../../..'
 alias ..... 'cd ../../../..'
+
+# monitors ---------------------------------------------------------------------
+function brightness -a value
+    ddcutil setvcp 10 $value -d 1
+    ddcutil setvcp 10 $value -d 2
+end
 
 # schemaspy --------------------------------------------------------------------
 function schemaspy -a host port username password db
@@ -53,19 +59,12 @@ function kn -a namespace
     kubectl config set-context --current --namespace=$namespace
 end
 
-# rust -------------------------------------------------------------------------
-function add-mold
-    echo [target.x86_64-unknown-linux-gnu]
-    echo linker = "clang"
-    echo rustflags = ["-C", "link-arg=-fuse-ld=$(which mold)"]
-end
-
 # tooling management -----------------------------------------------------------
 source $HOME/.asdf/asdf.fish
 
 # zola -------------------------------------------------------------------------
 function zola
-    docker run --rm -it -u $(id -u):$(id -g) -v $PWD:/app --workdir /app --name zola -p :1111 ghcr.io/getzola/zola:v0.17.1 $argv
+    docker run --rm -it -u $(id -u):$(id -g) -v $PWD:/app --workdir /app --name zola -p 1111:1111 ghcr.io/getzola/zola:v0.17.1 $argv
 end
 
 # prompt -----------------------------------------------------------------------
@@ -79,23 +78,6 @@ starship config kubernetes.disabled false
 # jupyter / livebook -----------------------------------------------------------
 alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -u (id -u):(id -g) -v (pwd):/home/jovyan jupyter/tensorflow-notebook"
 alias livebook "docker run --name livebook --rm -it -p 8080:8080 -p 8081:8081 --pull always -u (id -u):(id -g) -v (pwd):/data ghcr.io/livebook-dev/livebook"
-
-# poetry -----------------------------------------------------------------------
-function po-a -a name
-    poetry add $name@\* $argv[2..-1]
-end
-
-function po-ad -a name
-    poetry add --group dev $name@\* $argv[2..-1]
-end
-
-function po-r -a name
-    poetry add $name@\* $argv[2..-1]
-end
-
-function po-rd -a name
-    poetry add --group dev $name@\* $argv[2..-1]
-end
 
 # postgres ---------------------------------------------------------------------
 function pglist
@@ -147,7 +129,10 @@ function rdenv -a name
 end
 
 function rdstart -a name
+    # start redis and disable persistance
     docker run --rm -d -P --name redis-$name redis:alpine
+    docker exec redis-$name redis-cli config set save "" > /dev/null
+    docker exec redis-$name redis-cli config set appendonly no > /dev/null
     rdenv $name
 end
 
