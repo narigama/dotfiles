@@ -24,6 +24,7 @@ alias ll 'eza -lgh --git'
 alias :q exit
 alias :e code
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
+alias qr 'qrencode -t utf8'
 alias .. 'cd ..'
 alias ... 'cd ../..'
 alias .... 'cd ../../..'
@@ -93,7 +94,7 @@ end
 function pgstart -a name
     docker run --rm -d -P --name postgres-$name \
         -e POSTGRES_PASSWORD=postgres \
-        supabase/postgres
+        postgres:16-alpine
 
     pgenv $name
 end
@@ -103,7 +104,7 @@ function pgstart-inmemory -a name
         --tmpfs /var/lib/postgresql/data \
         -e PGDATA=/var/lib/postgresql/data \
         -e POSTGRES_PASSWORD=postgres \
-        supabase/postgres
+        postgres:16-alpine
 
     pgenv $name
 end
