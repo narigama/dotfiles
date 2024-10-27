@@ -18,6 +18,7 @@ fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/bin
 
 # aliases ----------------------------------------------------------------------
+alias cb 'xsel -b'
 alias lg lazygit
 alias l 'eza -lagh --git'
 alias ll 'eza -lgh --git'

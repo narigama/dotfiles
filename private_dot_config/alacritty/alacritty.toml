@@ -1,7 +1,7 @@
 [window]
 dynamic_padding = true
 # resize_increments = true
-opacity = 0.95
+opacity = 0.90
 
 [scrolling]
 multiplier = 10
