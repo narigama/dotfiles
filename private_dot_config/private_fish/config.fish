@@ -38,9 +38,10 @@ function brightness -a value
 end
 
 # schemaspy --------------------------------------------------------------------
-function schemaspy -a host port username password db
+function schemaspy -a target
     mkdir -p schemaspy/tables
-    docker run --rm -it -v (pwd)/schemaspy:/output schemaspy/schemaspy -t pgsql11 -host $host -port $port -u $username -p $password -db $db 
+    set host $(docker inspect postgres-$target -f '{{.NetworkSettings.IPAddress}}')
+    docker run --rm -it -v (pwd)/schemaspy:/output schemaspy/schemaspy -t pgsql11 -host $host -port 5432 -u postgres -p postgres -db postgres 
 end
 
 # docker / helm ----------------------------------------------------------------
