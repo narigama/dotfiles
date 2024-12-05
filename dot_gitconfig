@@ -1,7 +1,7 @@
 [user]
 	name = David Smith
 	email = david@narigama.dev
-	signingkey = 1C0F32B6F5397E05D03A118C2A8B0DE5CCE3732C
+	signingkey = /home/david/.ssh/id_github.pub
 
 [alias]
 	co = checkout
@@ -30,3 +30,6 @@
 
 [push]
   autoSetupRemote = true
+
+[gpg]
+	format = ssh

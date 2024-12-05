@@ -24,8 +24,9 @@ alias l 'eza -lagh --git'
 alias ll 'eza -lgh --git'
 alias :q exit
 alias :e code
-alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
 alias qr 'qrencode -t utf8'
+alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
+alias sysupdate 'paru -Syu --noconfirm'
 alias .. 'cd ..'
 alias ... 'cd ../..'
 alias .... 'cd ../../..'
@@ -35,13 +36,6 @@ alias ..... 'cd ../../../..'
 function brightness -a value
     ddcutil setvcp 10 $value -d 1
     ddcutil setvcp 10 $value -d 2
-end
-
-# schemaspy --------------------------------------------------------------------
-function schemaspy -a target
-    mkdir -p schemaspy/tables
-    set host $(docker inspect postgres-$target -f '{{.NetworkSettings.IPAddress}}')
-    docker run --rm -it -v (pwd)/schemaspy:/output schemaspy/schemaspy -t pgsql11 -host $host -port 5432 -u postgres -p postgres -db postgres 
 end
 
 # docker / helm ----------------------------------------------------------------
@@ -68,6 +62,12 @@ source $HOME/.asdf/asdf.fish
 # zola -------------------------------------------------------------------------
 function zola
     docker run --rm -it -u $(id -u):$(id -g) -v $PWD:/app --workdir /app --name zola -p 1111:1111 ghcr.io/getzola/zola:v0.17.1 $argv
+end
+
+# python -----------------------------------------------------------------------
+function pyclean
+    # remove all instances of __pycache__, skip the .venv
+    find . -type d -name __pycache__ | grep -Ev '^\./\.venv' | xargs rm -r
 end
 
 # prompt -----------------------------------------------------------------------
