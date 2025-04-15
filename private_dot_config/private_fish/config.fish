@@ -25,12 +25,30 @@ alias ll 'eza -lgh --git'
 alias :q exit
 alias :e code
 alias qr 'qrencode -t utf8'
+alias venv 'source .venv/bin/activate.fish'
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
 alias sysupdate 'paru -Syu --noconfirm'
 alias .. 'cd ..'
 alias ... 'cd ../..'
 alias .... 'cd ../../..'
 alias ..... 'cd ../../../..'
+
+# vpn stuff --------------------------------------------------------------------
+function vpnlist
+    openvpn3 configs-list -v
+end
+
+function vpnsessions
+    openvpn3 sessions-list
+end
+
+function vpnstart -a name
+    openvpn3 session-start --config $name
+end
+
+function vpnstop -a name
+    openvpn3 session-manage --config $name --disconnect
+end
 
 # monitors ---------------------------------------------------------------------
 function brightness -a value
