@@ -1,0 +1,61 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "httpx",
+#     "rich",
+# ]
+# ///
+import httpx
+import rich
+import rich.table
+import rich.text
+
+MODES_OF_TRANSPORT = (
+    "dlr",
+    "elizabeth-line",
+    "overground",
+    "tube",
+)
+
+
+class TFLStatus:
+    def __init__(self):
+        self.base_url = "https://api.tfl.gov.uk"
+        self.client = httpx.Client(base_url=self.base_url)
+
+    def get_modes(self) -> list[str]:
+        response = self.client.get("/Line/Meta/Modes")
+        response.raise_for_status()
+
+        return [line["modeName"] for line in response.json()]
+
+    def get_status(self) -> dict[str, str]:
+        response = self.client.get("/Line/Mode/{}/Status".format(",".join(MODES_OF_TRANSPORT)))
+        response.raise_for_status()
+
+        return {line["name"]: line["lineStatuses"][0]["statusSeverityDescription"] for line in response.json()}
+
+
+def main():
+    tfl = TFLStatus()
+
+    table = rich.table.Table("line", "status", title="TFL Status")
+    for line, status in filter(lambda pair: pair[1] != "Good Service", tfl.get_status().items()):
+        status_text = rich.text.Text(status)
+        status_text.stylize("red")
+        table.add_row(line, status_text)
+
+
+    table.add_row("---", "---")
+
+    for line, status in filter(lambda pair: pair[1] == "Good Service", tfl.get_status().items()):
+        status_text = rich.text.Text(status)
+        status_text.stylize("green")
+        table.add_row(line, status_text)
+
+    rich.print(table)
+
+
+if __name__ == "__main__":
+    main()
