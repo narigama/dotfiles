@@ -26,6 +26,7 @@ alias :q exit
 alias :e code
 alias qr 'qrencode -t utf8'
 alias venv 'source .venv/bin/activate.fish'
+alias ontime 'docker run --rm -d --name=ontime -p 4001:4001 -e TZ=Europe/London getontime/ontime'
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
 alias sysupdate 'paru -Syu --noconfirm'
 alias .. 'cd ..'
@@ -114,7 +115,10 @@ end
 function pgstart -a name
     docker run --rm -d -P --name postgres-$name \
         -e POSTGRES_PASSWORD=postgres \
-        postgres:16-alpine
+        postgres:16-alpine \
+        postgres \
+        -c shared_preload_libraries=pg_stat_statements \
+        -c pg_stat_statements.track=all
 
     pgenv $name
 end
