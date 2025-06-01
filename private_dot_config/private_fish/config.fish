@@ -115,10 +115,15 @@ end
 function pgstart -a name
     docker run --rm -d -P --name postgres-$name \
         -e POSTGRES_PASSWORD=postgres \
-        postgres:16-alpine \
+        postgres:17-alpine \
         postgres \
         -c shared_preload_libraries=pg_stat_statements \
-        -c pg_stat_statements.track=all
+        -c pg_stat_statements.track=all \
+        -c fsync=off \
+        -c full_page_writes=off \
+        -c synchronous_commit=off \
+        -c bgwriter_lru_maxpages=0 \
+        -c jit=off
 
     pgenv $name
 end
@@ -128,7 +133,14 @@ function pgstart-inmemory -a name
         --tmpfs /var/lib/postgresql/data \
         -e PGDATA=/var/lib/postgresql/data \
         -e POSTGRES_PASSWORD=postgres \
-        postgres:16-alpine
+        postgres:17-alpine \
+        -c shared_preload_libraries=pg_stat_statements \
+        -c pg_stat_statements.track=all \
+        -c fsync=off \
+        -c full_page_writes=off \
+        -c synchronous_commit=off \
+        -c bgwriter_lru_maxpages=0 \
+        -c jit=off
 
     pgenv $name
 end
