@@ -187,6 +187,11 @@ function rdshell -a name
     docker exec -it redis-$name redis-cli
 end
 
+function rdcli -a name
+    set rdport (docker port redis-$name 6379 | head -n1 | cut -d: -f2)
+    uvx iredis --url "redis://localhost:$rdport"
+end
+
 # rmq --------------------------------------------------------------------------
 function rmqlist
     docker ps | grep -i rmq | cat
