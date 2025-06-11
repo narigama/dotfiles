@@ -154,6 +154,11 @@ function pgshell -a name
     docker exec -it postgres-$name psql -Upostgres -h127.0.0.1
 end
 
+function pgcli -a name
+    set pgport (docker port postgres-$name 5432 | head -n1 | cut -d: -f2)
+    uvx pgcli "postgres://postgres:postgres@localhost:$pgport/postgres?sslmode=disable"
+end
+
 # redis ------------------------------------------------------------------------
 function rdlist
     docker ps | grep -i redis | cat
