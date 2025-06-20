@@ -95,6 +95,10 @@ require("lazy").setup({
       vim.api.nvim_set_keymap("v", "<Leader><Leader>k", "<cmd>HopLineBC<CR>", { noremap = true })
     end,
   },
+  {
+    "karb94/neoscroll.nvim",
+    opts = {},
+  },
 } --[[@as LazySpec]], {
   -- Configure any other `lazy.nvim` configuration options here
   ui = { backdrop = 100 },

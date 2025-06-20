@@ -97,9 +97,23 @@ starship init fish | source
 starship config git_metrics.disabled false
 starship config kubernetes.disabled false
 
-# jupyter / livebook -----------------------------------------------------------
+# jupyter / livebook / appsmith -------------------------------------------------
 alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -u (id -u):(id -g) -v (pwd):/home/jovyan jupyter/tensorflow-notebook"
 alias livebook "docker run --name livebook --rm -it -p 8080:8080 -p 8081:8081 --pull always -u (id -u):(id -g) -v (pwd):/data ghcr.io/livebook-dev/livebook"
+
+function docker-wait-for -a name
+    echo -n "Waiting for $name to become available"
+    while [ (docker inspect -f {{.State.Health.Status}} $name) != "healthy" ]
+        sleep 1
+        echo -n "."
+    end
+end
+
+function appsmith
+    docker run -d -P --rm --name appsmith index.docker.io/appsmith/appsmith-ee
+    docker-wait-for appsmith
+    xdg-open http://localhost:$(docker port appsmith 80 | head -n1 | cut -d: -f2)
+end
 
 # postgres ---------------------------------------------------------------------
 function pglist
