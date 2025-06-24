@@ -57,6 +57,11 @@ function brightness -a value
     ddcutil setvcp 10 $value -d 2
 end
 
+function theme -a image
+    uvx --from=pywal wal -q -i $image
+    swww img --transition-type=fade --transition-fps=120 --transition-duration=1 $image
+end
+
 # docker / helm ----------------------------------------------------------------
 function docker-vars -a name
     docker exec -t $name env | sort
@@ -110,7 +115,7 @@ function docker-wait-for -a name
 end
 
 function appsmith
-    docker run -d -P --rm --name appsmith index.docker.io/appsmith/appsmith-ee
+    docker run -d -P --rm --name appsmith appsmith/appsmith-ee
     docker-wait-for appsmith
     xdg-open http://localhost:$(docker port appsmith 80 | head -n1 | cut -d: -f2)
 end
