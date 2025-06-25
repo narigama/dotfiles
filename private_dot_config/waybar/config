@@ -8,9 +8,8 @@
         "spacing": 10
     },
     "clock": {
-        "format": "{:%I:%M }",
-        "format-alt": "{:%Y-%m-%d}"
-      
+        "interval": 1,
+        "format": "{:%Y-%m-%d %H:%M:%S %Z}"
     },
     "cpu": {
         "format": "{usage}% ",
