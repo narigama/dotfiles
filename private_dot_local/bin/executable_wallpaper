@@ -1,0 +1,52 @@
+#!/usr/bin/env -S uv run --script
+import pathlib
+import random
+import subprocess
+
+
+def run(command: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        command.split(),
+        capture_output=True,
+        text=True,
+    )
+
+
+def get_current_walls() -> set[pathlib.Path]:
+    return {
+        pathlib.Path(line.split()[-1].strip())
+        for line in run("swww query").stdout.strip().splitlines()
+    }
+
+
+def get_all_walls() -> set[pathlib.Path]:
+    return set(pathlib.Path("~/Pictures/wal").expanduser().glob("*.png"))
+
+
+def get_candidates(walls: set[pathlib.Path], current: set[pathlib.Path]) -> set[pathlib.Path]:
+    currently_applied = {c.name for c in current}
+
+    candidates = set()
+    for wall in walls:
+        if wall.name not in currently_applied:
+            candidates.add(wall)
+
+    return candidates
+
+
+def set_wallpaper(target: pathlib.Path):
+    run(
+        "swww img  --transition-type=fade --transition-fps=120 --transition-duration=1 {}".format(
+            target
+        )
+    )
+
+
+def main():
+    candidates = get_candidates(get_all_walls(), get_current_walls())
+    target = random.choice(list(candidates))
+    set_wallpaper(target)
+
+
+if __name__ == "__main__":
+    main()
