@@ -6,7 +6,7 @@
     "modules-right": ["custom/spotify", "pulseaudio", "network", "cpu", "memory", "clock", "tray"],
     "custom/spotify": {
         "interval": 1,
-        "exec": "bash spotify.sh",
+        "exec": "bash $HOME/.config/waybar/spotify.sh",
         "format": "{}",
         "on-click": "playerctl -p spotify play-pause",
         "on-scroll-up": "playerctl -p spotify next",
