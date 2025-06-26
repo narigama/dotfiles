@@ -20,7 +20,8 @@ def get_current_walls() -> set[pathlib.Path]:
 
 
 def get_all_walls() -> set[pathlib.Path]:
-    return set(pathlib.Path("~/Pictures/wal").expanduser().glob("*.png"))
+    base_path = pathlib.Path("~/Pictures/wal").expanduser()
+    return set(base_path.glob("*.png")) | set(base_path.glob("*.jpg"))
 
 
 def get_candidates(walls: set[pathlib.Path], current: set[pathlib.Path]) -> set[pathlib.Path]:

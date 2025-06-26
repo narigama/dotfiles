@@ -3,7 +3,15 @@
     "position": "top",
     "modules-left": ["hyprland/workspaces", "custom/media"],
     "modules-center": ["hyprland/window"],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "clock", "tray"],
+    "modules-right": ["custom/spotify", "pulseaudio", "network", "cpu", "memory", "clock", "tray"],
+    "custom/spotify": {
+        "interval": 1,
+        "exec": "bash spotify.sh",
+        "format": "{}",
+        "on-click": "playerctl -p spotify play-pause",
+        "on-scroll-up": "playerctl -p spotify next",
+        "on-scroll-down": "playerctl -p spotify previous"
+    },
     "tray": {
         "icon-size": 21,
         "spacing": 10
@@ -21,8 +29,8 @@
     },
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
+        "format-wifi": "{essid} ({signalStrength}%)  ",
+        "format-ethernet": "{ifname}: {ipaddr}/{cidr}  ",
         "format-linked": "{ifname} (No IP) ",
         "format-disconnected": "Disconnected ",
         "format-alt": "{ifname}: {ipaddr}/{cidr}"

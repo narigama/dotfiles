@@ -1,6 +1,6 @@
 * {
   border: none;
-  border-radius: 10;
+  border-radius: 10px;
   font-family: "Iosevka Term Slab NerdFont";
   font-size: 15px;
   min-height: 10px;
@@ -184,34 +184,7 @@ window#waybar.hidden {
   color: #b5e8e0;
   background: #161320;
 }
-
-#custom-launcher {
-  font-size: 24px;
-  margin-top: 6px;
-  margin-left: 8px;
-  padding-left: 10px;
-  padding-right: 5px;
-  border-radius: 5px;
-  transition: none;
-  color: #89dceb;
-  background: #161320;
-}
-
-#custom-power {
-  font-size: 20px;
-  margin-top: 6px;
-  margin-left: 8px;
-  margin-right: 8px;
-  padding-left: 10px;
-  padding-right: 5px;
-  margin-bottom: 0px;
-  border-radius: 5px;
-  transition: none;
-  color: #161320;
-  background: #f28fad;
-}
-
-#custom-wallpaper {
+#custom-spotify {
   margin-top: 6px;
   margin-left: 8px;
   padding-left: 10px;
@@ -223,26 +196,3 @@ window#waybar.hidden {
   background: #c9cbff;
 }
 
-#custom-updates {
-  margin-top: 6px;
-  margin-left: 8px;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-bottom: 0px;
-  border-radius: 5px;
-  transition: none;
-  color: #161320;
-  background: #e8a2af;
-}
-
-#custom-media {
-  margin-top: 6px;
-  margin-left: 8px;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-bottom: 0px;
-  border-radius: 5px;
-  transition: none;
-  color: #161320;
-  background: #f2cdcd;
-}
