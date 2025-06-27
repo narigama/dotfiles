@@ -1,10 +1,7 @@
 # plugins ----------------------------------------------------------------------
-if not type -q fisher
-    echo "Installing Fisher and Friends"
-    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
-    fisher install jorgebucaran/fisher
-    fisher install jethrokuan/fzf
-end
+# curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
+# fisher install jorgebucaran/fisher
+# fisher install jethrokuan/fzf
 
 # settings ---------------------------------------------------------------------
 set fish_greeting
