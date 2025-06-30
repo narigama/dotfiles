@@ -9,6 +9,7 @@
         "exec": "bash $HOME/.config/waybar/spotify.sh",
         "format": "{}",
         "on-click": "playerctl -p spotify play-pause",
+        "on-click-right": "hyprctl dispatch focuswindow class:Spotify",
         "on-scroll-up": "playerctl -p spotify next",
         "on-scroll-down": "playerctl -p spotify previous"
     },
