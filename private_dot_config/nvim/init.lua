@@ -147,9 +147,9 @@ vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 999
 
 -- transparency
-vim.cmd([[
-  highlight Normal guibg=none
-  highlight NonText guibg=none
-  highlight Normal ctermbg=none
-  highlight NonText ctermbg=none
-]])
+-- vim.cmd([[
+--   highlight Normal guibg=none
+--   highlight NonText guibg=none
+--   highlight Normal ctermbg=none
+--   highlight NonText ctermbg=none
+-- ]])
