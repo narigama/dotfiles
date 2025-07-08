@@ -2,8 +2,8 @@
 set -euo pipefail
 
 if [[ $(playerctl -p spotify status) == "Playing" ]]; then
-  printf "$(playerctl -p spotify metadata -f '{{artist}} - {{title}}') \uf1bc "
+  echo $(playerctl -p spotify metadata -f '{{artist}} - {{title}} ({{duration(position)}}/{{duration(mpris:length)}})')
 else
-  printf "... \uf1bc "
+  printf "..."
 fi
 

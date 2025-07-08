@@ -7,23 +7,14 @@
   box-shadow: none;
   text-shadow: none;
   background: transparent;
-}
 
-* {
-  animation-name: bounce-font;
-  animation-duration: 0.4s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+  font-family: "IosevkaTermSlab Nerd Font Mono", monospace;
+  font-size: 14px;
 }
 
 #waybar,
 tooltip {
-  font-family: "IosevkaTermSlab Nerd Font Mono", monospace;
-  font-size: 14px;
-
   background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 5px;
 }
 
@@ -31,16 +22,12 @@ tooltip {
   background: rgba(0, 0, 0, 0.8);
 }
 
-.modules-left > widget:first-child > #workspaces button {
-  margin-left: 0;
-}
-
-.modules-right {
+.modules-right label {
   padding: 0 10px;
 }
 
 #workspaces button {
-  padding: 5px 20px;
+  padding: 5px 10px;
 }
 
 #workspaces button.active {
