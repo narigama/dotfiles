@@ -1,0 +1,155 @@
+{
+  "reload_style_on_change": true,
+
+  "margin": "10 10 0",
+  "position": "top",
+  "layer": "top",
+
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": [],
+  "modules-right": [
+    "custom/spotify",
+    "network#info",
+    "cpu",
+    "memory",
+    "disk",
+    "battery",
+    "wireplumber",
+    "tray",
+    "clock",
+    "cava",
+  ],
+
+  "custom/spotify": {
+    "format": "SPOTIFY: {}",
+    "escape": true,
+    "interval": 1,
+    "exec": "$HOME/.config/waybar/spotify.sh",
+    "on-click": "playerctl -p spotify play-pause",
+    "on-scroll-up": "playerctl -p spotify next",
+    "on-scroll-down": "playerctl -p spotify previous",
+    "on-click-right": "hyprctl dispatch focuswindow class:Spotify",
+  },
+
+  "wireplumber": {
+    "format": "SND: {volume}%",
+    "format-muted": "SND: OFF",
+    "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+  },
+
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      // "1": "一",
+      // "2": "二",
+      // "3": "三",
+      // "4": "四",
+      // "5": "五",
+      // "6": "六",
+      // "7": "七",
+      // "8": "八",
+      // "9": "九",
+      // "10": "十",
+      "1": "I",
+      "2": "II",
+      "3": "III",
+      "4": "IV",
+      "5": "V",
+      "6": "VI",
+      "7": "VII",
+      "8": "VIII",
+      "9": "IX",
+      "10": "X",
+    },
+  },
+
+  "cpu": {
+    "interval": 5,
+    "format": "CPU: {usage}%",
+    "tooltip": "{}",
+    "tooltip-format": "{load}",
+  },
+
+  "memory": {
+    "interval": 5,
+    "format": "MEM: {percentage}%",
+    "tooltip": "{}",
+    "tooltip-format": "{used}/{total} GiB",
+  },
+
+  "disk": {
+    "interval": 5,
+    "format": "SSD: {percentage_free}%",
+    "tooltip": "{}",
+    "tooltip-format": "{used}/{total} GiB",
+  },
+
+  "battery": {
+    "interval": 10,
+    "states": {
+      "warning": 20,
+      "critical": 10,
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-charging-full": " {capacity}%",
+    "format-full": "{icon} {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "tooltip": "{}",
+    "tooltip-format": " {power}W",
+  },
+
+  "tray": {
+    "show-passive-items": true,
+    "icon-size": 20,
+    "spacing": 10,
+  },
+
+  "clock": {
+    "interval": 1,
+    "format": "{:%H:%M:%S}",
+    "tooltip-format": "Current date: {:%Y-%m-%d} \n\n<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col": 4,
+      "weeks-pos": "left",
+      "format": {
+        "months": "<span color='#cba6f7'><b>{}</b></span>",
+        "days": "<span color='#cdd6f4'><b>{}</b></span>",
+        "weeks": "<span color='#94e2d5'> W{}</span>",
+        "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+        "today": "<span color='#f5e0dc'><b><u>{}</u></b></span>",
+      },
+    },
+    "actions": {
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down",
+    },
+  },
+
+  "network#info": {
+    "interval": 5,
+    "format": "NET: {ifname} ({ipaddr})",
+    "format-wifi": "NET: {essid} ({ipaddr})",
+    "format-disconnected": "NET: OFFLINE",
+  },
+
+  "cava": {
+    "framerate": 60,
+    "sensitivity": 2,
+    "bars": 32,
+    "lower_cutoff_freq": 50,
+    "higher_cutoff_freq": 10000,
+    "hide_on_silence": false,
+    "method": "pipewire",
+    "source": "auto",
+    "bar_delimiter": 0,
+    "monstercat": false,
+    "waves": false,
+    "stereo": false,
+    "input_delay": 0,
+    "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ],
+  },
+}
