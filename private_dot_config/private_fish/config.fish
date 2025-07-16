@@ -31,6 +31,14 @@ alias ... 'cd ../..'
 alias .... 'cd ../../..'
 alias ..... 'cd ../../../..'
 
+# misc functions
+function far -a from -a to
+    for p in (rg $from --ignore-vcs -l)
+        echo $p
+        sed -i "s/$from/$to/g" $p
+    end
+end
+
 # vpn stuff --------------------------------------------------------------------
 function vpnlist
     openvpn3 configs-list -v
