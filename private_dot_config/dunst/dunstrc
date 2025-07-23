@@ -1,0 +1,40 @@
+[global]
+    monitor = 0
+    follow = mouse
+    width = 300
+    height = (5, 300)
+    origin = bottom-right
+    offset = (10, 30)
+    notification_limit = 20
+    frame_width = 1
+    frame_color = "#ececec"
+    gap_size = 5
+    font = IosevkaTermSlab Nerd Font 12
+    stack_duplicates = false
+
+[urgency_low]
+    # IMPORTANT: colors have to be defined in quotation marks.
+    # Otherwise the "#" and following would be interpreted as a comment.
+    background = "#333333"
+    foreground = "#ffffff"
+    timeout = 10
+    # Icon for notifications with low urgency
+    default_icon = dialog-information
+
+[urgency_normal]
+    background = "#333333"
+    foreground = "#ffffff"
+    timeout = 10
+    override_pause_level = 30
+    # Icon for notifications with normal urgency
+    default_icon = dialog-information
+
+[urgency_critical]
+    background = "#900000"
+    foreground = "#ffffff"
+    frame_color = "#ff0000"
+    timeout = 0
+    override_pause_level = 60
+    # Icon for notifications with critical urgency
+    default_icon = dialog-warning
+
