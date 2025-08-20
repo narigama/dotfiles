@@ -22,7 +22,6 @@ alias ll 'eza -lgh --git'
 alias :q exit
 alias :e code
 alias qr 'qrencode -t utf8'
-alias venv 'source .venv/bin/activate.fish'
 alias ontime 'docker run --rm -d --name=ontime -p 4001:4001 -e TZ=Europe/London getontime/ontime'
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
 alias sysupdate 'paru -Syu --noconfirm'
@@ -94,6 +93,14 @@ function zola
 end
 
 # python -----------------------------------------------------------------------
+function venv
+    if test -d venv
+        source venv/bin/activate.fish
+    else
+        source .venv/bin/activate.fish
+    end
+end
+
 function pyclean
     # remove all instances of __pycache__, skip the .venv
     find . -type d -name __pycache__ | grep -Ev '^\./\.venv' | xargs rm -r
