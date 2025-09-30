@@ -22,6 +22,7 @@ alias ll 'eza -lgh --git'
 alias :q exit
 alias :e code
 alias qr 'qrencode -t utf8'
+alias vsc 'code .'
 alias ontime 'docker run --rm -d --name=ontime -p 4001:4001 -e TZ=Europe/London getontime/ontime'
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
 alias sysupdate 'paru -Syuu --noconfirm'
@@ -85,7 +86,7 @@ function kn -a namespace
 end
 
 # tooling management -----------------------------------------------------------
-source $HOME/.asdf/asdf.fish
+mise activate | source
 
 # zola -------------------------------------------------------------------------
 function zola
@@ -146,7 +147,7 @@ end
 function pgstart -a name
     docker run --rm -d -P --name postgres-$name \
         -e POSTGRES_PASSWORD=postgres \
-        postgres:17-alpine \
+        postgres:18-alpine \
         postgres \
         -c shared_preload_libraries=pg_stat_statements \
         -c pg_stat_statements.track=all \
@@ -164,7 +165,7 @@ function pgstart-inmemory -a name
         --tmpfs /var/lib/postgresql/data \
         -e PGDATA=/var/lib/postgresql/data \
         -e POSTGRES_PASSWORD=postgres \
-        postgres:17-alpine \
+        postgres:18-alpine \
         -c shared_preload_libraries=pg_stat_statements \
         -c pg_stat_statements.track=all \
         -c fsync=off \
