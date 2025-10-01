@@ -1,0 +1,20 @@
+[tools]
+bun = "latest"
+dbmate = "latest"
+deno = "latest"
+gcloud = "latest"
+golang = "latest"
+helm = "latest"
+k3s = "latest"
+k9s = "latest"
+kind = "latest"
+kubectl = "latest"
+kubectx = "latest"
+minikube = "latest"
+neovim = "latest"
+nodejs = "latest"
+taplo = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = []
+trusted_config_paths = ["~/code"]
