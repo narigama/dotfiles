@@ -10,23 +10,23 @@ interval=5
 signal=10
 
 [volume]
-label=VOL
+label=VOL 
 interval=once
 signal=10
 
 [memory]
-label=MEM
+label=MEM 
 separator=false
 interval=30
 
 [memory]
-label=SWAP
+label=SWAP 
 instance=swap
 separator=false
 interval=30
 
 [disk]
-label=HOME
+label=HOME 
 interval=30
 
 [iface]
@@ -35,7 +35,7 @@ interval=10
 separator=false
 
 [wifi]
-label=wifi:
+label=WIFI 
 interval=10
 separator=false
 
@@ -43,16 +43,16 @@ separator=false
 interval=5
 
 [cpu_usage]
-label=CPU
+label=CPU 
 interval=10
 min_width=CPU 100.00%
 
 [load_average]
-label=LOAD
+label=LOAD 
 interval=10
 
 [battery]
-label=BAT
+label=BAT 
 interval=30
 
 [time]
