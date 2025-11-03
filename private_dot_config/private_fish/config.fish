@@ -103,8 +103,9 @@ function venv
 end
 
 function pyclean
-    # remove all instances of __pycache__, skip the .venv
+    # remove all instances of __pycache__ and egg-info, skip the .venv
     find . -type d -name __pycache__ | grep -Ev '^\./\.venv' | xargs rm -r
+    find . -type d -name '*egg-info*' | grep -Ev '^\./\.venv' | xargs rm -r
 end
 
 # prompt -----------------------------------------------------------------------
