@@ -1,6 +1,7 @@
 [tools]
 age = "latest"
 atuin = "latest"
+awscli = "latest"
 bat = "latest"
 bun = "latest"
 chezmoi = "latest"
