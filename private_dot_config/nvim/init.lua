@@ -95,6 +95,18 @@ require("lazy").setup({
     config = function() require("lsp_signature").setup() end,
   },
   {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      scroll = {
+        animate = {
+          easing = "outQuad",
+        },
+      },
+    },
+  },
+  {
     "smoka7/hop.nvim",
     -- branch = "master",
     lazy = false,
@@ -119,6 +131,7 @@ require("lazy").setup({
       vim.api.nvim_set_keymap("v", "<Leader><Leader>k", "<cmd>HopLineBC<CR>", { noremap = true })
     end,
   },
+  { import = "plugins" }  -- for system specific plugins
 }, {
   ui = { backdrop = 100 },
   performance = {
