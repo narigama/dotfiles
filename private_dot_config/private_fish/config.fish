@@ -23,6 +23,7 @@ alias :q exit
 alias :e code
 alias qr 'qrencode -t utf8'
 alias vsc 'code .'
+alias nv 'uv run nvim'
 alias ontime 'docker run --rm -d --name=ontime -p 4001:4001 -e TZ=Europe/London getontime/ontime'
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
 alias sysupdate 'paru -Syuu --noconfirm'

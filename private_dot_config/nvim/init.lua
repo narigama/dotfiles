@@ -41,8 +41,9 @@ require("lazy").setup({
     { import = "astrocommunity.pack.lua" },
     { import = "astrocommunity.pack.rust" },
     { import = "astrocommunity.pack.toml" },
+    { import = "astrocommunity.pack.terraform" },
     { import = "astrocommunity.pack.python-ruff" },
-    { import = "astrocommunity.colorscheme.kanagawa-nvim" },
+    { import = "astrocommunity.colorscheme" },
   },
   {
     "AstroNvim/astroui",
@@ -131,6 +132,7 @@ require("lazy").setup({
       vim.api.nvim_set_keymap("v", "<Leader><Leader>k", "<cmd>HopLineBC<CR>", { noremap = true })
     end,
   },
+  { "Bekaboo/deadcolumn.nvim" },
   { import = "plugins" }  -- for system specific plugins
 }, {
   ui = { backdrop = 100 },
@@ -152,11 +154,12 @@ vim.cmd "set mouse="
 vim.opt.rnu = false
 vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 999
+vim.opt.colorcolumn = "121"
 
 -- transparency
--- vim.cmd [[
---   highlight Normal guibg=none
---   highlight NonText guibg=none
---   highlight Normal ctermbg=none
---   highlight NonText ctermbg=none
--- ]]
+vim.cmd [[
+  highlight Normal guibg=none
+  highlight NonText guibg=none
+  highlight Normal ctermbg=none
+  highlight NonText ctermbg=none
+]]
