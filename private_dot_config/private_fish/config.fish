@@ -264,31 +264,6 @@ function rmqshell -a name
     docker exec -it rmq-$name ash
 end
 
-# minio ------------------------------------------------------------------------
-function mnlist
-    docker ps | grep -i minio | cat
-end
-
-function mnstart -a name
-    set mnpass (openssl rand -hex 4)
-    docker run --rm -d --name minio-$name \
-        -P \
-        -e MINIO_ROOT_USER=$name \
-        -e MINIO_ROOT_PASSWORD=$mnpass \
-        bitnami/minio:latest
-
-    set mnport (docker port minio-$name 9001 | head -n1 | cut -d: -f2)
-    echo "Admin Dashboard:  http://localhost:$mnport ($name:$mnpass)"
-
-    set mnport (docker port minio-$name 9000 | head -n1 | cut -d: -f2)
-    set -gx BUCKET_URL "http://localhost:$mnport"
-    echo "Bucket URL:       $BUCKET_URL"
-end
-
-function mnstop -a name
-    docker stop minio-$name
-end
-
 # machine specific config ------------------------------------------------------
 touch $HOME/.secret_stuff
 source $HOME/.secret_stuff
