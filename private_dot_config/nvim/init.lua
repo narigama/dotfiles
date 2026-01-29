@@ -49,7 +49,7 @@ require("lazy").setup({
   {
     "AstroNvim/astroui",
     opts = {
-      colorscheme = "kanagawa",
+      colorscheme = "gruvbox",
     },
     icons = {
       LSPLoading1 = "⠋",
