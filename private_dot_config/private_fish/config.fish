@@ -82,7 +82,11 @@ alias kc 'kubectl config use-context'
 alias kl 'kubectl config get-contexts'
 alias kd 'kubectl describe'
 
-function kn -a namespace
+function ksec -a secret --wraps "kubectl get secret"
+    kubectl get secrets/$secret -o json | jq "{name: .metadata.name,data: .data|map_values(@base64d)}"
+end
+
+function kn -a namespace --wraps "kubectl get namespace"
     kubectl config set-context --current --namespace=$namespace
 end
 
