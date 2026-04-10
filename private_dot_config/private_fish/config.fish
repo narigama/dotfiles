@@ -91,7 +91,7 @@ function kn -a namespace --wraps "kubectl get namespace"
 end
 
 # tooling management -----------------------------------------------------------
-mise activate | source
+mise activate fish | source
 
 # zola -------------------------------------------------------------------------
 function zola
