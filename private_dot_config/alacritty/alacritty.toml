@@ -1,7 +1,7 @@
 [window]
+opacity = 0.95
 dynamic_padding = true
 # resize_increments = true
-opacity = 0.9
 
 [mouse]
 bindings = [
@@ -15,8 +15,8 @@ multiplier = 10
 size = 11
 normal = { family = "IosevkaTermSlab NF" }
 
-
 [[keyboard.bindings]]
 key = "Return"
 mods = "Shift"
 chars = "\u001B\r"
+
