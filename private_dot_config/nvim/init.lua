@@ -40,7 +40,7 @@ require("lazy").setup({
     "AstroNvim/astrocommunity",
     { import = "astrocommunity.pack.gleam" },
     { import = "astrocommunity.pack.lua" },
-    { import = "astrocommunity.pack.python-ruff" },
+    { import = "astrocommunity.pack.python" },
     { import = "astrocommunity.pack.rust" },
     { import = "astrocommunity.pack.sql" },
     { import = "astrocommunity.pack.terraform" },
@@ -135,7 +135,7 @@ require("lazy").setup({
     end,
   },
   { "Bekaboo/deadcolumn.nvim" },
-  { import = "plugins" }, -- for system specific plugins
+  -- { import = "plugins" }, -- for system specific plugins
 }, {
   ui = { backdrop = 100 },
   performance = {

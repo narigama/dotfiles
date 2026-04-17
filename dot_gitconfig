@@ -11,7 +11,7 @@
 	dif = difftool
 
 [init]
-	defaultBranch = master
+	defaultBranch = main
 
 [core]
 	excludesfile = ~/.gitignore
