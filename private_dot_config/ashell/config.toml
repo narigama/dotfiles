@@ -1,0 +1,74 @@
+[main]
+position = "Top"
+layer = "Top"
+
+[modules]
+left = ["Workspaces"]
+center = []
+right = [["MediaPlayer", "SystemInfo", "Tray", "Tempo", "Settings"]]
+
+[workspaces]
+workspace_names = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+enable_workspace_filling = true
+max_workspaces = 10
+
+[media_player]
+max_title_length = 50
+indicator_format = "IconAndTitle"
+
+[system_info]
+indicators = ["Cpu", "Memory", { Disk = "/", Name = "SSD" }]
+interval = 5
+
+[system_info.cpu]
+warn_threshold = 60
+alert_threshold = 80
+
+[system_info.memory]
+warn_threshold = 70
+alert_threshold = 85
+
+[system_info.disk]
+warn_threshold = 80
+alert_threshold = 90
+
+[tempo]
+clock_format = "%H:%M:%S"
+weather_indicator = "None"
+
+[settings]
+battery_format = "IconAndPercentage"
+audio_indicator_format = "IconAndPercentage"
+network_indicator_format = "Icon"
+indicators = ["Audio", "Network", "Battery"]
+
+# Theme: Base16 Default Dark (matches kitty terminal)
+[appearance]
+style = "Solid"
+font_name = "IosevkaTermSlab NF"
+scale_factor = 1.2
+opacity = 0.9
+text_color = "#d8d8d8"
+success_color = "#90a959"
+workspace_colors = ["#6a9fb5", "#aa759f", "#75b5aa"]
+
+[appearance.primary_color]
+base = "#6a9fb5"
+text = "#181818"
+
+[appearance.danger_color]
+base = "#ac4242"
+weak = "#f4bf75"
+
+[appearance.background_color]
+base = "#181818"
+weak = "#242424"
+strong = "#2d2d2d"
+
+[appearance.secondary_color]
+base = "#0e0e0e"
+strong = "#141414"
+
+[appearance.menu]
+opacity = 0.90
+backdrop = 0.3
