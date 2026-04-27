@@ -1,5 +1,6 @@
 [tools]
 age = "latest"
+argocd = "latest"
 "asdf:mise-plugins/mise-glab" = "latest"
 atuin = "latest"
 awscli = "latest"

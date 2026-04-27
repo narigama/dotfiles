@@ -5,7 +5,7 @@ layer = "Top"
 [modules]
 left = ["Workspaces"]
 center = []
-right = [["MediaPlayer", "SystemInfo", "Tray", "Tempo", "Settings"]]
+right = [["Updates", "Privacy", "MediaPlayer", "SystemInfo", "Tray", "Tempo", "Settings"]]
 
 [workspaces]
 workspace_names = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
@@ -34,7 +34,8 @@ alert_threshold = 90
 
 [tempo]
 clock_format = "%H:%M:%S"
-weather_indicator = "None"
+weather_indicator = "IconAndTemperature"
+weather_location = "Current"
 
 [settings]
 battery_format = "IconAndPercentage"
