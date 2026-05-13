@@ -46,6 +46,7 @@ require("lazy").setup({
     { import = "astrocommunity.pack.terraform" },
     { import = "astrocommunity.pack.toml" },
     { import = "astrocommunity.colorscheme" },
+    { import = "astrocommunity.editing-support.cloak-nvim" },
   },
   {
     "AstroNvim/astroui",
@@ -101,13 +102,15 @@ require("lazy").setup({
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
-    opts = {
-      scroll = {
-        animate = {
-          easing = "outQuad",
+    opts = function(_, opts)
+      opts.scroll = { animate = { easing = "outQuad" } }
+      opts.scope = {
+        treesitter = {
+          injections = false, -- workaround for nvim 0.12 bug: nil node in injection query crashes get_range()
         },
-      },
-    },
+      }
+      return opts
+    end,
   },
   {
     "smoka7/hop.nvim",
@@ -135,6 +138,16 @@ require("lazy").setup({
     end,
   },
   { "Bekaboo/deadcolumn.nvim" },
+  -- aerial.nvim crashes on Neovim 0.12 because TSNode:start() and :end_() were
+  -- deprecated and removed. aerial uses them in backends/treesitter/helpers.lua.
+  -- Removing treesitter from the backend list prevents the crash; LSP (the default
+  -- first backend) covers most filetypes anyway. The only loss is symbol outline
+  -- for files that have no LSP server attached.
+  -- Remove this override once stevearc/aerial.nvim#513 is merged and released.
+  {
+    "stevearc/aerial.nvim",
+    opts = { backends = { "lsp", "markdown", "man" } },
+  },
   -- { import = "plugins" }, -- for system specific plugins
 }, {
   ui = { backdrop = 100 },
@@ -151,12 +164,60 @@ require("lazy").setup({
   },
 })
 
+-- load custom snippets on first insert (LuaSnip is lazy, not available until then)
+vim.api.nvim_create_autocmd("InsertEnter", {
+  once = true,
+  callback = function()
+    require("luasnip.loaders.from_vscode").load({ paths = { vim.fn.stdpath("config") .. "/snippets" } })
+  end,
+})
+
 -- polish
 vim.cmd "set mouse="
 vim.opt.rnu = false
 vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 999
 vim.opt.colorcolumn = "121"
+
+-- snippet picker
+vim.keymap.set({ "n", "i" }, "<leader>fs", function()
+  local ls = require "luasnip"
+  local ft = vim.bo.filetype
+  local snips = vim.list_extend(vim.list_slice(ls.get_snippets(ft)), ls.get_snippets "all")
+  if vim.tbl_isempty(snips) then
+    vim.notify("No snippets for filetype: " .. ft, vim.log.levels.WARN)
+    return
+  end
+  Snacks.picker.pick {
+    title = "Snippets (" .. ft .. ")",
+    items = vim.tbl_map(function(s)
+      return { text = s.trigger .. " " .. (s.name or s.trigger), trigger = s.trigger, name = s.name or s.trigger, snippet = s }
+    end, snips),
+    format = function(item)
+      return { { item.trigger, "Keyword" }, { "  " .. item.name, "Comment" } }
+    end,
+    preview = function(ctx)
+      ctx.preview:reset()
+      local ok, docstring = pcall(function() return ctx.item.snippet:get_docstring() end)
+      if not ok or not docstring then
+        ctx.preview:notify("no preview available", "warn")
+        return
+      end
+      local lines = type(docstring) == "string"
+        and vim.split(docstring, "\n", { plain = true })
+        or docstring
+      ctx.preview:set_lines(lines)
+      ctx.preview:highlight({ ft = ft })
+    end,
+    confirm = function(picker, item)
+      picker:close()
+      vim.schedule(function()
+        if vim.api.nvim_get_mode().mode ~= "i" then vim.cmd "startinsert" end
+        vim.schedule(function() ls.snip_expand(item.snippet) end)
+      end)
+    end,
+  }
+end, { desc = "Find snippets" })
 
 -- transparency
 vim.cmd [[
