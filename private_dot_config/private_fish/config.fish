@@ -27,6 +27,7 @@ alias vsc 'code .'
 alias nv 'uv run nvim'
 alias ontime 'docker run --rm -d --name=ontime -p 4001:4001 -e TZ=Europe/London getontime/ontime'
 alias esphome 'docker run --rm -it --name esphome -P -v $HOME/esphome:/config ghcr.io/esphome/esphome'
+alias codefind 'uvx semble[mcp] search -k1 --include-text-files'
 alias sysupdate 'paru -Syuu --noconfirm'
 alias .. 'cd ..'
 alias ... 'cd ../..'
@@ -151,10 +152,10 @@ function pgenv -a name
     echo $DATABASE_URL
 end
 
-function pgstart -a name
+function pgstart -a name image
     docker run --rm -d -P --name postgres-$name \
         -e POSTGRES_PASSWORD=postgres \
-        postgres:18-alpine \
+        (if test -n "$image"; echo $image; else if set -q POSTGRES_IMAGE; echo $POSTGRES_IMAGE; else; echo postgres:17-alpine; end) \
         postgres \
         -c shared_preload_libraries=pg_stat_statements \
         -c pg_stat_statements.track=all \
@@ -172,7 +173,7 @@ function pgstart-inmemory -a name
         --tmpfs /var/lib/postgresql/data \
         -e PGDATA=/var/lib/postgresql/data \
         -e POSTGRES_PASSWORD=postgres \
-        postgres:18-alpine \
+        (if set -q POSTGRES_IMAGE; echo $POSTGRES_IMAGE; else; echo postgres:17-alpine; end) \
         -c shared_preload_libraries=pg_stat_statements \
         -c pg_stat_statements.track=all \
         -c fsync=off \
@@ -195,7 +196,7 @@ end
 
 function pgcli -a name
     set pgport (docker port postgres-$name 5432 | head -n1 | cut -d: -f2)
-    uvx pgcli "postgres://postgres:postgres@localhost:$pgport/postgres?sslmode=disable"
+    uvx --with psycopg_binary pgcli "postgres://postgres:postgres@localhost:$pgport/postgres?sslmode=disable"
 end
 
 # redis ------------------------------------------------------------------------

@@ -1,7 +1,8 @@
 [tools]
+"asdf:mise-plugins/mise-glab" = "latest"
 age = "latest"
 argocd = "latest"
-"asdf:mise-plugins/mise-glab" = "latest"
+atlas = "latest"
 atuin = "latest"
 awscli = "latest"
 bat = "latest"
@@ -27,6 +28,7 @@ kubectl = "latest"
 kubectx = "latest"
 kustomize = "latest"
 minikube = "latest"
+mkcert = "latest"
 neovim = "latest"
 node = "latest"
 pulumi = "latest"
@@ -38,7 +40,9 @@ taplo = "latest"
 usage = "latest"
 uv = "latest"
 vault = "latest"
+zellij = "latest"
 zoxide = "latest"
+azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
 
 [settings]
 idiomatic_version_file_enable_tools = []
