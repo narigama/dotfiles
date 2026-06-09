@@ -1,0 +1,423 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "click>=8.4.1",
+#     "rich>=15.0.0",
+# ]
+# ///
+"""
+Database management CLI
+"""
+import abc
+import json
+import os
+import subprocess
+import time
+import typing
+
+import click
+from rich.console import Console
+from rich.table import Table
+from rich.text import Text
+
+
+def docker_cmd(*args, **kwargs):
+    subprocess.run(["docker"] + list(args), check=True, **kwargs)
+
+
+def docker_port(container, port):
+    result = subprocess.run(
+        ["docker", "port", container, str(port)],
+        capture_output=True, text=True, check=True,
+    )
+    line = result.stdout.strip().splitlines()[0]
+    return line.split(":")[-1]
+
+
+def format_ports(ports_str):
+    if not ports_str:
+        return ""
+    seen = set()
+    parts = []
+    for mapping in ports_str.split(", "):
+        if "->" not in mapping:
+            continue
+        host_part, container_part = mapping.split("->")
+        host_port = host_part.split(":")[-1]
+        key = (host_port, container_part)
+        if key not in seen:
+            seen.add(key)
+            parts.append("{} -> {}".format(container_part, host_port))
+    return "\n".join(parts)
+
+
+def docker_list(grep):
+    result = subprocess.run(
+        ["docker", "ps", "--format", "json"],
+        capture_output=True, text=True,
+    )
+    table = Table(show_header=True, header_style="bold")
+    table.add_column("Name")
+    table.add_column("Image")
+    table.add_column("Status")
+    table.add_column("Ports")
+
+    for line in result.stdout.splitlines():
+        if not line.strip():
+            continue
+        c = json.loads(line)
+        if grep.lower() not in c.get("Names", "").lower():
+            continue
+        status = c.get("Status", "")
+        if status.startswith("Up"):
+            status_text = Text(status, style="green")
+        elif "Paused" in status:
+            status_text = Text(status, style="yellow")
+        else:
+            status_text = Text(status, style="red")
+        table.add_row(
+            c.get("Names", ""),
+            c.get("Image", ""),
+            status_text,
+            format_ports(c.get("Ports", "")),
+        )
+
+    Console().print(table)
+
+
+class DatabaseService(abc.ABC):
+    PREFIX: typing.ClassVar[str]
+    DEFAULT_IMAGE: typing.ClassVar[str]
+
+    def container(self, name: str) -> str:
+        return "{}-{}".format(self.PREFIX, name)
+
+    def list(self) -> None:
+        docker_list(self.PREFIX)
+
+    def stop(self, name: str) -> None:
+        docker_cmd("stop", self.container(name))
+
+    @abc.abstractmethod
+    def env(self, name: str) -> None: ...
+
+    @abc.abstractmethod
+    def start(self, name: str, image: str | None = None) -> None: ...
+
+    @abc.abstractmethod
+    def shell(self, name: str) -> None: ...
+
+
+PG_PERF_FLAGS = [
+    "-c", "shared_preload_libraries=pg_stat_statements",
+    "-c", "pg_stat_statements.track=all",
+    "-c", "fsync=off",
+    "-c", "full_page_writes=off",
+    "-c", "synchronous_commit=off",
+    "-c", "bgwriter_lru_maxpages=0",
+    "-c", "jit=off",
+]
+
+
+class PostgresService(DatabaseService):
+    PREFIX = "postgres"
+    DEFAULT_IMAGE = "postgres:17-alpine"
+
+    def env(self, name: str) -> None:
+        port = docker_port(self.container(name), 5432)
+        click.echo("postgres://postgres:postgres@localhost:{}/postgres?sslmode=disable".format(port))
+
+    def start(self, name: str, image: str | None = None, *, inmemory: bool = False) -> None:
+        image = image or os.environ.get("POSTGRES_IMAGE", self.DEFAULT_IMAGE)
+        cmd = ["run", "--rm", "-d", "-P", "--name", self.container(name)]
+        if inmemory:
+            cmd += ["--tmpfs", "/var/lib/postgresql/data", "-e", "PGDATA=/var/lib/postgresql/data"]
+        cmd += ["-e", "POSTGRES_PASSWORD=postgres", image, "postgres"] + PG_PERF_FLAGS
+        docker_cmd(*cmd)
+        self.env(name)
+
+    def shell(self, name: str) -> None:
+        docker_cmd("exec", "-it", self.container(name), "psql", "-Upostgres", "-h127.0.0.1")
+
+    def cli(self, name):
+        port = docker_port(self.container(name), 5432)
+        url = "postgres://postgres:postgres@localhost:{}/postgres?sslmode=disable".format(port)
+        subprocess.run(["uvx", "--with", "psycopg_binary", "pgcli", url])
+
+
+class RedisService(DatabaseService):
+    PREFIX = "redis"
+    DEFAULT_IMAGE = "redis:alpine"
+
+    def env(self, name: str) -> None:
+        port = docker_port(self.container(name), 6379)
+        click.echo("redis://localhost:{}".format(port))
+
+    def start(self, name: str, image: str | None = None) -> None:
+        docker_cmd("run", "--rm", "-d", "-P", "--name", self.container(name), image or self.DEFAULT_IMAGE)
+        docker_cmd("exec", self.container(name), "redis-cli", "config", "set", "save", "", capture_output=True)
+        docker_cmd("exec", self.container(name), "redis-cli", "config", "set", "appendonly", "no", capture_output=True)
+        self.env(name)
+
+    def shell(self, name: str) -> None:
+        docker_cmd("exec", "-it", self.container(name), "redis-cli")
+
+    def cli(self, name):
+        port = docker_port(self.container(name), 6379)
+        subprocess.run(["uvx", "iredis", "--url", "redis://localhost:{}".format(port)])
+
+
+class RabbitMQService(DatabaseService):
+    PREFIX = "rmq"
+    DEFAULT_IMAGE = "rabbitmq:3-management-alpine"
+
+    def env(self, name: str) -> None:
+        http_port = docker_port(self.container(name), 15672)
+        click.echo("http://localhost:{}/".format(http_port))
+
+        mqtt_port = docker_port(self.container(name), 15675)
+        click.echo("ws://guest:guest@localhost:{}/ws".format(mqtt_port))
+
+        amqp_port = docker_port(self.container(name), 5672)
+        click.echo("amqp://guest:guest@localhost:{}".format(amqp_port))
+
+    def start(self, name: str, image: str | None = None) -> None:
+        docker_cmd("run", "--rm", "-d", "-P", "-p", ":15675", "--name", self.container(name), image or self.DEFAULT_IMAGE)
+        time.sleep(3)
+        docker_cmd("exec", self.container(name), "ash", "-c", "rabbitmq-plugins enable rabbitmq_web_mqtt")
+        self.env(name)
+
+    def shell(self, name: str) -> None:
+        docker_cmd("exec", "-it", self.container(name), "ash")
+
+
+class MongoService(DatabaseService):
+    PREFIX = "mongo"
+    DEFAULT_IMAGE = "mongo:8"
+
+    def env(self, name: str) -> None:
+        port = docker_port(self.container(name), 27017)
+        click.echo("mongodb://localhost:{}".format(port))
+
+    def start(self, name: str, image: str | None = None) -> None:
+        docker_cmd("run", "--rm", "-d", "-P", "--name", self.container(name), image or self.DEFAULT_IMAGE)
+        self.env(name)
+
+    def shell(self, name: str) -> None:
+        docker_cmd("exec", "-it", self.container(name), "mongosh")
+
+
+pg_svc = PostgresService()
+rd_svc = RedisService()
+rmq_svc = RabbitMQService()
+mg_svc = MongoService()
+
+
+@click.group()
+def cli():
+    """Manage local postgres, redis, rabbitmq, and mongo docker containers."""
+    pass
+
+
+# --- postgres ------------------------------------------------------------------
+
+@cli.group()
+def pg():
+    """Manage postgres containers."""
+    pass
+
+@pg.command("list")
+def pg_list():
+    """List running postgres containers."""
+    pg_svc.list()
+
+@pg.command("env")
+@click.argument("name")
+def pg_env(name):
+    """Print connection URL for a named container."""
+    pg_svc.env(name)
+
+@pg.command("start")
+@click.argument("name")
+@click.option("--image", default=None, help="Docker image to use (overrides POSTGRES_IMAGE env var).")
+@click.option("--inmemory", is_flag=True, help="Mount postgres data dir as tmpfs.")
+def pg_start(name, image, inmemory):
+    """Start a postgres container."""
+    pg_svc.start(name, image, inmemory=inmemory)
+
+@pg.command("stop")
+@click.argument("name")
+def pg_stop(name):
+    """Stop a postgres container."""
+    pg_svc.stop(name)
+
+@pg.command("shell")
+@click.argument("name")
+def pg_shell(name):
+    """Open a psql shell in a postgres container."""
+    pg_svc.shell(name)
+
+@pg.command("cli")
+@click.argument("name")
+def pg_cli(name):
+    """Open pgcli connected to a postgres container."""
+    pg_svc.cli(name)
+
+
+# --- redis ---------------------------------------------------------------------
+
+@cli.group()
+def rd():
+    """Manage redis containers."""
+    pass
+
+@rd.command("list")
+def rd_list():
+    """List running redis containers."""
+    rd_svc.list()
+
+@rd.command("env")
+@click.argument("name")
+def rd_env(name):
+    """Print connection URL for a named container."""
+    rd_svc.env(name)
+
+@rd.command("start")
+@click.argument("name")
+@click.option("--image", default=None, help="Docker image to use.")
+def rd_start(name, image):
+    """Start a redis container with persistence disabled."""
+    rd_svc.start(name, image)
+
+@rd.command("stop")
+@click.argument("name")
+def rd_stop(name):
+    """Stop a redis container."""
+    rd_svc.stop(name)
+
+@rd.command("shell")
+@click.argument("name")
+def rd_shell(name):
+    """Open a redis-cli shell in a redis container."""
+    rd_svc.shell(name)
+
+@rd.command("cli")
+@click.argument("name")
+def rd_cli(name):
+    """Open iredis connected to a redis container."""
+    rd_svc.cli(name)
+
+
+# --- rabbitmq -----------------------------------------------------------------
+
+@cli.group()
+def rmq():
+    """Manage rabbitmq containers."""
+    pass
+
+@rmq.command("list")
+def rmq_list():
+    """List running rabbitmq containers."""
+    rmq_svc.list()
+
+@rmq.command("env")
+@click.argument("name")
+def rmq_env(name):
+    """Print connection URLs for a named container."""
+    rmq_svc.env(name)
+
+@rmq.command("start")
+@click.argument("name")
+@click.option("--image", default=None, help="Docker image to use.")
+def rmq_start(name, image):
+    """Start a rabbitmq container with the management and web MQTT plugins."""
+    rmq_svc.start(name, image)
+
+@rmq.command("stop")
+@click.argument("name")
+def rmq_stop(name):
+    """Stop a rabbitmq container."""
+    rmq_svc.stop(name)
+
+@rmq.command("shell")
+@click.argument("name")
+def rmq_shell(name):
+    """Open an ash shell in a rabbitmq container."""
+    rmq_svc.shell(name)
+
+
+# --- mongo --------------------------------------------------------------------
+
+@cli.group()
+def mg():
+    """Manage mongo containers."""
+    pass
+
+@mg.command("list")
+def mg_list():
+    """List running mongo containers."""
+    mg_svc.list()
+
+@mg.command("env")
+@click.argument("name")
+def mg_env(name):
+    """Print connection URL for a named container."""
+    mg_svc.env(name)
+
+@mg.command("start")
+@click.argument("name")
+@click.option("--image", default=None, help="Docker image to use.")
+def mg_start(name, image):
+    """Start a mongo container."""
+    mg_svc.start(name, image)
+
+@mg.command("stop")
+@click.argument("name")
+def mg_stop(name):
+    """Stop a mongo container."""
+    mg_svc.stop(name)
+
+@mg.command("shell")
+@click.argument("name")
+def mg_shell(name):
+    """Open a mongosh shell in a mongo container."""
+    mg_svc.shell(name)
+
+
+def fish_completions(prog):
+    top_cmds = " ".join(cli.commands)
+    lines = []
+    for name, cmd in cli.commands.items():
+        desc = (cmd.help or "").split("\n")[0].replace("'", "\\'")
+        lines.append(
+            "complete -c {prog} -f -n 'not __fish_seen_subcommand_from {top}' -a {name} -d '{desc}'".format(
+                prog=prog, top=top_cmds, name=name, desc=desc,
+            )
+        )
+        if hasattr(cmd, "commands"):
+            sub_cmds = " ".join(cmd.commands)
+            for sub_name, sub_cmd in cmd.commands.items():
+                sub_desc = (sub_cmd.help or "").split("\n")[0].replace("'", "\\'")
+                lines.append(
+                    "complete -c {prog} -f -n '__fish_seen_subcommand_from {name}; and not __fish_seen_subcommand_from {subs}' -a {sub_name} -d '{sub_desc}'".format(
+                        prog=prog, name=name, subs=sub_cmds, sub_name=sub_name, sub_desc=sub_desc,
+                    )
+                )
+    return "\n".join(lines)
+
+
+@cli.command("completions")
+@click.argument("shell", type=click.Choice(["bash", "zsh", "fish"]))
+def completions(shell):
+    """Print shell completion script. Example: db completions fish > ~/.config/fish/completions/db.fish"""
+    if shell == "fish":
+        click.echo(fish_completions("db"))
+    else:
+        from click.shell_completion import BashComplete, ZshComplete
+        comp = {"bash": BashComplete, "zsh": ZshComplete}[shell](cli, {}, "db", "_DB_COMPLETE")
+        click.echo(comp.source())
+
+
+if __name__ == "__main__":
+    cli()
