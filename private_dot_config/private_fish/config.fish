@@ -42,23 +42,6 @@ function far -a from -a to
     end
 end
 
-# vpn stuff --------------------------------------------------------------------
-function vpnlist
-    openvpn3 configs-list -v
-end
-
-function vpnsessions
-    openvpn3 sessions-list
-end
-
-function vpnstart -a name
-    openvpn3 session-start --config $name
-end
-
-function vpnstop -a name
-    openvpn3 session-manage --config $name --disconnect
-end
-
 # monitors ---------------------------------------------------------------------
 function brightness -a value
     ddcutil setvcp 10 $value -d 1
