@@ -1,3 +1,7 @@
+# en_US locale implies imperial units; en_GB keeps English but switches
+# weather/temperature to metric (and dates to day-first)
+region = "en_GB"
+
 [main]
 position = "Top"
 layer = "Top"
