@@ -1,0 +1,74 @@
+[general]
+font-sans = "IosevkaTermSlab Nerd Font"
+font-mono = "IosevkaTermSlab Nerd Font"
+
+[bar]
+padding = 0.0
+padding-ends = 0.0
+module-gap = 0.0
+bg = "bg-base"
+shadow = "drop"
+button-variant = "basic"
+button-icon-padding = 0.5
+button-label-weight = "bold"
+button-rounding = "none"
+
+[[bar.layout]]
+monitor = "*"
+show = true
+left = [
+    "hyprland-workspaces",
+    "cava",
+]
+center = ["clock"]
+right = [
+    "media",
+    "microphone",
+    "volume",
+    "cpu",
+    "ram",
+    "notifications",
+    "network",
+    "bluetooth",
+    "dashboard",
+]
+
+[styling]
+scale = 1.0
+rounding = "none"
+
+[styling.palette]
+bg = "#16161e"
+surface = "#1a1b26"
+elevated = "#292e42"
+fg = "#c0caf5"
+fg-muted = "#a9b1d6"
+primary = "#7aa2f7"
+red = "#f7768e"
+yellow = "#e0af68"
+green = "#9ece6a"
+blue = "#7dcfff"
+
+[modules.bluetooth]
+label-show = false
+
+[modules.cava]
+bars = 48
+noise-reduction = 0.1
+style = "peaks"
+bar-gap = 2
+internal-padding = 0.0
+
+[modules.clock]
+format = "%Y-%m-%d %H:%M:%S%z"
+dropdown-show-seconds = true
+
+[modules.network]
+label-show = false
+
+[modules.notifications]
+popup-close-behavior = "remove"
+
+[modules.weather]
+location = "London"
+time-format = "24h"
