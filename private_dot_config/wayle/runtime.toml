@@ -6,9 +6,8 @@ font-mono = "IosevkaTermSlab Nerd Font"
 padding = 0.0
 padding-ends = 0.0
 module-gap = 0.0
-bg = "bg-base"
-shadow = "drop"
 button-variant = "basic"
+button-bg-opacity = 0
 button-icon-padding = 0.5
 button-label-weight = "bold"
 button-rounding = "none"
@@ -20,9 +19,11 @@ left = [
     "hyprland-workspaces",
     "cava",
 ]
-center = ["clock"]
+center = []
 right = [
+    "systray",
     "media",
+    "clock",
     "microphone",
     "volume",
     "cpu",
@@ -72,3 +73,11 @@ popup-close-behavior = "remove"
 [modules.weather]
 location = "London"
 time-format = "24h"
+
+[osd]
+enabled = false
+
+[wallpaper]
+transition-type = "center"
+transition-duration = 2.0
+transition-fps = 120
