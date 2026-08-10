@@ -39,16 +39,16 @@ scale = 1.0
 rounding = "none"
 
 [styling.palette]
-bg = "#16161e"
-surface = "#1a1b26"
-elevated = "#292e42"
-fg = "#c0caf5"
-fg-muted = "#a9b1d6"
-primary = "#7aa2f7"
-red = "#f7768e"
-yellow = "#e0af68"
-green = "#9ece6a"
-blue = "#7dcfff"
+bg = "#131a24"
+surface = "#192330"
+elevated = "#212e3f"
+fg = "#cdcecf"
+fg-muted = "#71839b"
+primary = "#719cd6"
+red = "#c94f6d"
+yellow = "#dbc074"
+green = "#81b29a"
+blue = "#63cdcf"
 
 [modules.bluetooth]
 label-show = false
@@ -68,14 +68,12 @@ dropdown-show-seconds = true
 label-show = false
 
 [modules.notifications]
+popup-position = "bottom-right"
 popup-close-behavior = "remove"
 
 [modules.weather]
 location = "London"
 time-format = "24h"
-
-[osd]
-enabled = false
 
 [wallpaper]
 transition-type = "center"

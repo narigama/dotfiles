@@ -43,6 +43,13 @@ vault = "latest"
 zellij = "latest"
 zoxide = "latest"
 azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
+lazygit = "latest"
+redis = "latest"
+rust-analyzer = "latest"
+rust = "latest"
+cargo = "latest"
+"npm:ntn" = "latest"
+tmux = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = []
