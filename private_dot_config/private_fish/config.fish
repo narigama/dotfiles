@@ -14,6 +14,7 @@ set -gx EDITOR nvim
 # paths ------------------------------------------------------------------------
 fish_add_path $HOME/.cargo/bin
 fish_add_path $HOME/.local/bin
+fish_add_path $HOME/.cache/.bun/bin
 
 # aliases ----------------------------------------------------------------------
 alias cb 'xsel -b'
@@ -106,9 +107,20 @@ starship init fish | source
 starship config git_metrics.disabled false
 starship config kubernetes.disabled false
 
-# jupyter / livebook / appsmith -------------------------------------------------
-alias notebook "docker run --name tensorflow-notebook -it --rm -p 8888:8888 -u (id -u):(id -g) -v (pwd):/home/jovyan jupyter/tensorflow-notebook"
-alias livebook "docker run --name livebook --rm -it -p 8080:8080 -p 8081:8081 --pull always -u (id -u):(id -g) -v (pwd):/data ghcr.io/livebook-dev/livebook"
+# marimo / appsmith ------------------------------------------------------------
+function notebook --description "marimo notebook with per-notebook sandboxed deps, rooted at a target dir"
+    set -l dir (pwd)
+    if test (count $argv) -gt 0; and test -d $argv[1]
+        set dir (realpath $argv[1])
+        set -e argv[1]
+    end
+
+    if not string match -qv -- '-*' $argv
+        set argv $argv $dir
+    end
+
+    uvx --from 'marimo[sandbox,mcp]' marimo edit --sandbox --no-token --mcp tools $argv
+end
 
 function docker-wait-for -a name
     echo -n "Waiting for $name to become available"

@@ -50,6 +50,7 @@ rust = "latest"
 cargo = "latest"
 "npm:ntn" = "latest"
 tmux = "latest"
+gh = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = []
