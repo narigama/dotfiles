@@ -265,6 +265,84 @@ function rmqshell -a name
     docker exec -it rmq-$name ash
 end
 
+# s3 (rustfs) ------------------------------------------------------------------
+function s3list
+    docker ps | grep -iE 's3|rustfs' | cat
+end
+
+function s3env -a name
+    set s3port (docker port s3-$name 9000 | head -n1 | cut -d: -f2)
+    set consoleport (docker port s3-$name 9001 | head -n1 | cut -d: -f2)
+
+    set -gx AWS_ENDPOINT_URL "http://localhost:$s3port"
+    set -gx AWS_ENDPOINT_URL_S3 "http://localhost:$s3port"
+    set -gx S3_ENDPOINT "http://localhost:$s3port"
+    set -gx S3_ENDPOINT_URL "http://localhost:$s3port"
+    set -gx AWS_ACCESS_KEY_ID "admin"
+    set -gx AWS_SECRET_ACCESS_KEY "admin"
+    set -gx AWS_REGION "us-east-1"
+    set -gx AWS_DEFAULT_REGION "us-east-1"
+
+    echo "S3 API:  $AWS_ENDPOINT_URL"
+    if test -n "$consoleport"
+        echo "Console: http://localhost:$consoleport/rustfs/console/"
+    end
+end
+
+function s3start -a name image
+    docker run --rm -d -P --name s3-$name \
+        -e RUSTFS_ACCESS_KEY=admin \
+        -e RUSTFS_SECRET_KEY=admin \
+        -e RUSTFS_CONSOLE_ENABLE=true \
+        (if test -n "$image"; echo $image; else if set -q RUSTFS_IMAGE; echo $RUSTFS_IMAGE; else; echo rustfs/rustfs:latest; end)
+
+    s3env $name
+end
+
+function s3start-inmemory -a name
+    docker run --rm -d -P --name s3-$name \
+        --tmpfs /data:uid=10001,gid=10001 \
+        -e RUSTFS_VOLUMES=/data \
+        -e RUSTFS_ACCESS_KEY=admin \
+        -e RUSTFS_SECRET_KEY=admin \
+        -e RUSTFS_CONSOLE_ENABLE=true \
+        (if set -q RUSTFS_IMAGE; echo $RUSTFS_IMAGE; else; echo rustfs/rustfs:latest; end)
+
+    s3env $name
+end
+
+function s3stop -a name
+    docker stop s3-$name
+    set -u AWS_ENDPOINT_URL
+    set -u AWS_ENDPOINT_URL_S3
+    set -u S3_ENDPOINT
+    set -u S3_ENDPOINT_URL
+    set -u AWS_ACCESS_KEY_ID
+    set -u AWS_SECRET_ACCESS_KEY
+    set -u AWS_REGION
+    set -u AWS_DEFAULT_REGION
+end
+
+function s3shell -a name
+    docker exec -it s3-$name sh
+end
+
+function s3console -a name
+    set consoleport (docker port s3-$name 9001 | head -n1 | cut -d: -f2)
+    xdg-open "http://localhost:$consoleport/rustfs/console/"
+end
+
+function s3cli -a name
+    set -l s3port (docker port s3-$name 9000 | head -n1 | cut -d: -f2)
+    set -e argv[1]
+    if test (count $argv) -eq 0
+        set argv ls
+    end
+    AWS_ACCESS_KEY_ID=admin AWS_SECRET_ACCESS_KEY=admin AWS_REGION=us-east-1 aws --endpoint-url "http://localhost:$s3port" s3 $argv
+end
+
 # machine specific config ------------------------------------------------------
 touch $HOME/.secret_stuff
 source $HOME/.secret_stuff
+
+
