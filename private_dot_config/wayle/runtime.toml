@@ -19,12 +19,10 @@ left = [
     "hyprland-workspaces",
     "cava",
 ]
-center = []
+center = ["media"]
 right = [
     "systray",
-    "media",
     "clock",
-    "microphone",
     "volume",
     "cpu",
     "ram",
@@ -61,7 +59,7 @@ bar-gap = 2
 internal-padding = 0.0
 
 [modules.clock]
-format = "%Y-%m-%d %H:%M:%S%z"
+format = "%H:%M:%S"
 dropdown-show-seconds = true
 
 [modules.network]

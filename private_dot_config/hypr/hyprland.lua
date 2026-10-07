@@ -62,14 +62,15 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("uwsm finalize")
 	-- hl.exec_cmd("ashell") -- replaced by wayle 2026-06-22 (re-enable to revert)
 	hl.exec_cmd("awww-daemon")
-	hl.exec_cmd("wayle panel start")
+	-- hl.exec_cmd("wayle panel start") -- replaced by narigama-shell 2026-10-07 (re-enable to revert)
+	hl.exec_cmd("qs -p $HOME/.config/narigama-shell")
 	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
 	hl.exec_cmd("easyeffects --service-mode")
 	hl.exec_cmd("wl-paste --type text --watch cliphist store")
 	hl.exec_cmd("wl-paste --type image --watch cliphist store")
 	hl.exec_cmd("gnome-keyring-daemon --start --components=secrets,pkcs11,ssh")
-	hl.exec_cmd("swayosd-server")
 	hl.exec_cmd("wayscriber --daemon")
+	hl.exec_cmd("ydotoold")
 end)
 
 -----------------------
@@ -125,6 +126,7 @@ hl.config({
 	misc = {
 		force_default_wallpaper = 1, -- Set to 0 or 1 to disable the anime mascot wallpapers
 		disable_hyprland_logo = true, -- If true disables the random hyprland logo / anime girl background. :(
+		allow_session_lock_restore = true, -- narigama-shell can relock after restarting, instead of the red screen
 	},
 
 	cursor = {
@@ -141,12 +143,21 @@ hl.animation({ leaf = "windows", enabled = true, speed = 1, bezier = "default", 
 hl.animation({ leaf = "windowsOut", enabled = false })
 hl.animation({ leaf = "fadeIn", enabled = false })
 hl.animation({ leaf = "fadeOut", enabled = false })
+hl.animation({ leaf = "fadeLayersIn", enabled = false })
+hl.animation({ leaf = "fadeLayersOut", enabled = false })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 1, bezier = "default", style = "slide" })
 
 -- Disable layer animations for anyrun launcher
 hl.layer_rule({
 	name = "no-anim-anyrun",
 	match = { namespace = "^anyrun$" },
+	no_anim = true,
+})
+
+-- narigama-shell animates its own surfaces (slides); Hyprland's map/unmap fade would fight them
+hl.layer_rule({
+	name = "no-anim-narigama",
+	match = { namespace = "^narigama-" },
 	no_anim = true,
 })
 
@@ -203,26 +214,27 @@ hl.bind(mainMod .. " + T", hl.dsp.workspace.move({ monitor = "+1" }))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only -s"))
 hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd("hyprshot -m window --clipboard-only -s"))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("waypaper"))
+hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("handy --toggle-transcription"))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("wayscriber --daemon-toggle"))
 hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("hyprpicker -anl"))
 hl.bind(mainMod .. " + End", hl.dsp.exit())
 
 -- Multimedia / OSD Keys
-hl.bind("Caps_Lock", hl.dsp.exec_cmd("sleep 0.1 && swayosd-client --caps-lock"), { locked = true })
+hl.bind("Caps_Lock", hl.dsp.exec_cmd("sleep 0.1 && qs -p $HOME/.config/narigama-shell ipc call osd capsLock"), { locked = true })
 hl.bind(
 	"XF86AudioRaiseVolume",
-	hl.dsp.exec_cmd("swayosd-client --output-volume raise"),
+	hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"),
 	{ locked = true, repeating = true }
 )
 hl.bind(
 	"XF86AudioLowerVolume",
-	hl.dsp.exec_cmd("swayosd-client --output-volume lower"),
+	hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
 	{ locked = true, repeating = true }
 )
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"), { locked = true })
-hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("swayosd-client --playerctl play-pause --player spotify"), { locked = true })
-hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("swayosd-client --playerctl prev --player spotify"), { locked = true })
-hl.bind("XF86AudioNext", hl.dsp.exec_cmd("swayosd-client --playerctl next --player spotify"), { locked = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl --player spotify play-pause"), { locked = true })
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl --player spotify previous"), { locked = true })
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl --player spotify next"), { locked = true })
 
 -- Move focus with mainMod + hjkl
 hl.bind(mainMod .. " + h", hl.dsp.focus({ direction = "left" }))
@@ -245,8 +257,8 @@ for i = 1, 10 do
 end
 
 -- Scroll through existing workspaces with mainMod + scroll
-hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
-hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
+hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e-1" }))
+hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e+1" }))
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })

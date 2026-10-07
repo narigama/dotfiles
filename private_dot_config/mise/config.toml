@@ -51,6 +51,8 @@ cargo = "latest"
 "npm:ntn" = "latest"
 tmux = "latest"
 gh = "latest"
+duckdb = "latest"
+trivy = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = []

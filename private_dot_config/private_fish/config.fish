@@ -108,18 +108,28 @@ starship config git_metrics.disabled false
 starship config kubernetes.disabled false
 
 # marimo / appsmith ------------------------------------------------------------
-function notebook --description "marimo notebook with per-notebook sandboxed deps, rooted at a target dir"
+function notebook --description "marimo notebook with local venv via uv, rooted at a target dir"
     set -l dir (pwd)
-    if test (count $argv) -gt 0; and test -d $argv[1]
-        set dir (realpath $argv[1])
-        set -e argv[1]
+    if test (count $argv) -gt 0
+        if test -d $argv[1]
+            set dir (realpath $argv[1])
+            set -e argv[1]
+        else if test -f $argv[1]
+            set dir (dirname (realpath $argv[1]))
+        end
     end
 
     if not string match -qv -- '-*' $argv
         set argv $argv $dir
     end
 
-    uvx --from 'marimo[sandbox,mcp]' marimo edit --sandbox --no-token --mcp tools $argv
+    if not test -d "$dir/.venv"
+        uv venv "$dir/.venv"
+    end
+
+    uv pip install --python "$dir/.venv" -q 'marimo[mcp]'
+
+    "$dir/.venv/bin/marimo" edit --no-token --mcp tools $argv
 end
 
 function docker-wait-for -a name
