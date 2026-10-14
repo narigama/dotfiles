@@ -34,7 +34,7 @@ hl.monitor({
 -- Set programs that you use
 local terminal = "kitty"
 local fileManager = "nautilus --new-window"
-local menu = "anyrun"
+local menu = "qs -p $HOME/.config/narigama-shell ipc call launcher toggle"
 
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----
